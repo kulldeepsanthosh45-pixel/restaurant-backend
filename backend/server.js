@@ -4,7 +4,7 @@ const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const allowedOrigins = ['https://YOUR_NETLIFY_SITE.netlify.app']; // replace later
+const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['https://YOUR_NETLIFY_SITE.netlify.app']; // replace later
 app.use(cors({ origin: allowedOrigins }));
 
 app.use(express.json());
