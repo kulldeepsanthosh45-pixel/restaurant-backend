@@ -1423,7 +1423,7 @@
         return;
       }
       const statuses = ['Pending', 'Preparing', 'Ready', 'Delivered'];
-      let html = `<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Order ID</th><th>Table</th><th>Items</th><th>Total</th><th>Time</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+      let html = `<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Order ID</th><th>Table</th><th>Items</th><th>Total</th><th>Time</th><th>Status</th><th>Update</th><th>Bill</th></tr></thead><tbody>`;
       list.forEach(o => {
         const sClass = { Pending: 's-pending', Preparing: 's-preparing', Ready: 's-ready', Delivered: 's-delivered' }[o.status];
         html += `<tr>
@@ -1436,10 +1436,64 @@
       <td><select class="table-select" style="padding:5px 10px;font-size:0.78rem;margin:0;min-width:120px" onchange="updateOrderStatus(${o.id},this.value)">
         ${statuses.map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
       </select></td>
+      <td><button class="action-btn btn-edit" onclick="adminPrintBill(${o.id})" style="background:var(--amber);color:#000;font-weight:700">🖨 Print</button></td>
     </tr>`;
       });
       html += '</tbody></table></div>';
       document.getElementById(containerId).innerHTML = html;
+    }
+
+    function adminPrintBill(orderId) {
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      const subtotal = o.items.reduce((s, i) => s + i.line, 0);
+      const gst = Math.round(subtotal * 0.05);
+      const total = subtotal + gst;
+      const itemsHtml = o.items.map(i =>
+        `<tr><td>${i.name}</td><td style="text-align:center">${i.qty}</td><td style="text-align:right">₹${i.line}</td></tr>`
+      ).join('');
+      const win = window.open('', '_blank', 'width=400,height=600');
+      win.document.write(`
+        <!DOCTYPE html><html><head><title>Bill #${o.id}</title>
+        <style>
+          body { font-family: monospace; padding: 24px; max-width: 360px; margin: auto; }
+          h2 { text-align:center; margin-bottom:4px; }
+          p { text-align:center; color:#555; margin:2px 0; font-size:13px; }
+          hr { border: 1px dashed #ccc; margin: 12px 0; }
+          table { width:100%; border-collapse:collapse; font-size:14px; }
+          th { text-align:left; padding: 4px 0; border-bottom:1px solid #ccc; }
+          td { padding: 4px 0; }
+          .total-row td { font-weight:bold; font-size:16px; border-top:2px solid #000; padding-top:8px; }
+          .footer { text-align:center; margin-top:16px; font-size:12px; color:#888; }
+          @media print { button { display:none; } }
+        </style></head><body>
+        <h2>Everdine Restaurant</h2>
+        <p>📍 123 Golden Avenue, Food City</p>
+        <p>📞 +91 98765 43210</p>
+        <hr>
+        <p><strong>Order #${o.id}</strong> &nbsp;|&nbsp; ${o.table}</p>
+        <p>${o.time} &nbsp;|&nbsp; ${new Date().toLocaleDateString()}</p>
+        <hr>
+        <table>
+          <thead><tr><th>Item</th><th style="text-align:center">Qty</th><th style="text-align:right">Amount</th></tr></thead>
+          <tbody>${itemsHtml}</tbody>
+        </table>
+        <hr>
+        <table>
+          <tr><td>Subtotal</td><td style="text-align:right">₹${subtotal}</td></tr>
+          <tr><td>GST (5%)</td><td style="text-align:right">₹${gst}</td></tr>
+          <tr class="total-row"><td>TOTAL</td><td style="text-align:right">₹${total}</td></tr>
+        </table>
+        <div class="footer">
+          <p style="margin-top:16px">Thank you for dining with us! 🍽️</p>
+          <p>Visit again at everdine-600126.netlify.app</p>
+        </div>
+        <br>
+        <button onclick="window.print()" style="width:100%;padding:12px;font-size:16px;background:#e8a020;border:none;border-radius:8px;cursor:pointer;font-weight:bold">🖨 Print Bill</button>
+        <script>window.onload = function(){ window.print(); }<\/script>
+        </body></html>
+      `);
+      win.document.close();
     }
 
     async function updateOrderStatus(id, status) {
