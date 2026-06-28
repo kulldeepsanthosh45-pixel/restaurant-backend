@@ -308,9 +308,23 @@ app.post('/api/checkout', async (req, res) => {
   res.status(201).json({ message: 'Checkout successful, bill generated', bill: billData });
 });
 
+// Health check endpoint
+app.get('/', (req, res) => res.json({ status: 'ok', message: 'Everdine backend is running' }));
+app.get('/health', (req, res) => res.json({ status: 'ok', message: 'Everdine backend is running' }));
 
 // Start server
 const PORT = process.env.PORT || 5000;
+
+// Validate required environment variables
+const required = ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET'];
+const missing = required.filter(k => !process.env[k]);
+if (missing.length > 0) {
+  console.error('❌ MISSING ENVIRONMENT VARIABLES:', missing.join(', '));
+  console.error('Please set these in Railway → Settings → Variables');
+} else {
+  console.log('✅ All environment variables present');
+}
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
