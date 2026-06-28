@@ -4,7 +4,27 @@ const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-app.use(cors());
+
+// Allow requests from Netlify, Railway, localhost, and any ALLOWED_ORIGINS env var
+const extraOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : [];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g. mobile apps, Postman, curl)
+    if (!origin) return callback(null, true);
+    // Allow localhost for local dev
+    if (origin.startsWith('http://localhost') || origin.startsWith('https://localhost')) return callback(null, true);
+    // Allow any Netlify subdomain
+    if (origin.endsWith('.netlify.app') || origin === 'https://app.netlify.com') return callback(null, true);
+    // Allow any Railway subdomain
+    if (origin.endsWith('.railway.app')) return callback(null, true);
+    // Allow any explicitly listed origins
+    if (extraOrigins.includes(origin)) return callback(null, true);
+    // Block everything else
+    callback(new Error('CORS: origin ' + origin + ' not allowed'));
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -46,7 +66,7 @@ app.post('/api/auth/signup', async (req, res) => {
 // Login
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
-  
+
   const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -132,7 +152,7 @@ const razorpay = new Razorpay({
 // Create Order (with items)
 app.post('/api/orders', async (req, res) => {
   const { customer_id, table_no, items, payment_method } = req.body;
-  
+
   if (!items || items.length === 0) {
     return res.status(400).json({ error: 'Order must contain items' });
   }
@@ -145,10 +165,10 @@ app.post('/api/orders', async (req, res) => {
   // 1. Insert Order into Supabase
   const { data: orderData, error: orderError } = await supabase
     .from('orders')
-    .insert([{ 
-      customer_id, 
-      table_no, 
-      status: 'Pending', 
+    .insert([{
+      customer_id,
+      table_no,
+      status: 'Pending',
       total_amount: final_total,
       payment_method: payment_method || 'Cash',
       payment_status: payment_method === 'Online' ? 'Pending' : 'Unpaid'
@@ -177,8 +197,8 @@ app.post('/api/orders', async (req, res) => {
         currency: 'INR',
         receipt: `receipt_order_${orderData.id}`,
       });
-      return res.status(201).json({ 
-        message: 'Order created', 
+      return res.status(201).json({
+        message: 'Order created',
         order: orderData,
         razorpay_order: rzpOrder,
         key_id: process.env.RAZORPAY_KEY_ID
@@ -197,7 +217,7 @@ app.post('/api/orders', async (req, res) => {
 app.post('/api/payment/verify', async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, order_id } = req.body;
   const secret = process.env.RAZORPAY_KEY_SECRET || 'YOUR_SECRET_HERE';
-  
+
   // Verify Signature
   const shasum = crypto.createHmac('sha256', secret);
   shasum.update(`${razorpay_order_id}|${razorpay_payment_id}`);
@@ -209,7 +229,7 @@ app.post('/api/payment/verify', async (req, res) => {
       .from('orders')
       .update({ payment_status: 'Paid', payment_id: razorpay_payment_id })
       .eq('id', order_id);
-      
+
     if (error) {
       return res.status(500).json({ status: 'Payment successful but DB update failed', error: error.message });
     }
@@ -288,9 +308,23 @@ app.post('/api/checkout', async (req, res) => {
   res.status(201).json({ message: 'Checkout successful, bill generated', bill: billData });
 });
 
+// Health check endpoint
+app.get('/', (req, res) => res.json({ status: 'ok', message: 'Everdine backend is running' }));
+app.get('/health', (req, res) => res.json({ status: 'ok', message: 'Everdine backend is running' }));
 
 // Start server
 const PORT = process.env.PORT || 5000;
+
+// Validate required environment variables
+const required = ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET'];
+const missing = required.filter(k => !process.env[k]);
+if (missing.length > 0) {
+  console.error('❌ MISSING ENVIRONMENT VARIABLES:', missing.join(', '));
+  console.error('Please set these in Railway → Settings → Variables');
+} else {
+  console.log('✅ All environment variables present');
+}
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
