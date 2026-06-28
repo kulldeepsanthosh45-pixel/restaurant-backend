@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Everdine – Food That Satisfies</title>
+  <link rel="icon" href="logo.png" type="image/jpeg" id="favicon">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ─── NAVBAR ─── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-left" style="display: flex; align-items: center; gap: 12px;">
+      <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+      <div class="logo" onclick="showPage('home')"
+        style="width: 52px; height: 52px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: transparent;">
+        <img id="navLogo" src="logo.png" alt="Everdine E" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+      </div>
+    </div>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="showPage('home')">🏠 Home</button>
+      <button class="nav-link" onclick="showPage('starters')">🍢 Starters</button>
+      <button class="nav-link" onclick="showPage('maincourse')">🍛 Main Course</button>
+      <button class="nav-link" onclick="showPage('desserts')">🍮 Desserts</button>
+      <button class="nav-link" onclick="showPage('drinks')">🥤 Drinks</button>
+      <button class="nav-link" onclick="showPage('snacks')">🍿 Snacks</button>
+    </div>
+    <div class="nav-right">
+      <button class="cart-btn fav-nav-btn" onclick="toggleFavs()" id="favNavBtn" title="My Favourites">
+        ❤️ Favs
+        <span class="cart-badge" id="favBadge" style="background:var(--rose,#e05c7a)">0</span>
+      </button>
+      <button class="cart-btn" onclick="toggleCart()">
+        🛒 Cart
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+      <button class="admin-btn" onclick="showPage('login')" id="navLoginBtn">👤 Login</button>
+      <button class="admin-btn" onclick="showPage('admin')" id="navAdminBtn" style="display: none;">⚙ Admin</button>
+    </div>
+  </nav>
+
+  <!-- ─── HOME PAGE ─── -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <div class="master-carousel" id="masterCarousel">
+        <div class="master-slide">
+          <div class="hero-banner">
+            <div class="hero-slider-wrap">
+              <div class="hero-slider" id="heroSlider">
+                <img class="hero-food-img" src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&q=80" alt="food">
+                <img class="hero-food-img" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80" alt="food">
+                <img class="hero-food-img" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80" alt="food">
+              </div>
+            </div>
+            <div class="hero-content">
+              <p class="hero-eyebrow">✦ Premium Dining Experience</p>
+              <h1 class="hero-title">Indulge in a <em>Grand Spread</em> of World-Class Flavors</h1>
+              <p class="hero-sub">Experience the finest culinary creations crafted by master chefs, bringing you a symphony of taste in every bite.</p>
+              <div class="hero-actions">
+                <button class="btn-primary" onclick="showPage('maincourse')">Explore Menu</button>
+                <button class="admin-btn" onclick="showPage('starters')">View Starters</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="master-slide">
+          <div class="hero-banner full-banner">
+            <img src="banner1.png" alt="Promo 1">
+          </div>
+        </div>
+
+        <div class="master-slide">
+          <div class="hero-banner full-banner">
+            <img src="banner2.png" alt="Promo 2">
+          </div>
+        </div>
+
+        <!-- Clone of first slide for seamless loop -->
+        <div class="master-slide">
+          <div class="hero-banner">
+            <div class="hero-slider-wrap">
+              <div class="hero-slider">
+                <img class="hero-food-img" src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&q=80" alt="food">
+                <img class="hero-food-img" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80" alt="food">
+                <img class="hero-food-img" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80" alt="food">
+              </div>
+            </div>
+            <div class="hero-content">
+              <p class="hero-eyebrow">✦ Premium Dining Experience</p>
+              <h1 class="hero-title">Indulge in a <em>Grand Spread</em> of World-Class Flavors</h1>
+              <p class="hero-sub">Experience the finest culinary creations crafted by master chefs, bringing you a symphony of taste in every bite.</p>
+              <div class="hero-actions">
+                <button class="btn-primary" onclick="showPage('maincourse')">Explore Menu</button>
+                <button class="admin-btn" onclick="showPage('starters')">View Starters</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="hero-arrow hero-arrow-left" id="heroArrowLeft" onclick="heroSlideNav(-1)">&#10094;</button>
+      <button class="hero-arrow hero-arrow-right" id="heroArrowRight" onclick="heroSlideNav(1)">&#10095;</button>
+
+      <div class="search-wrap reveal">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" id="globalSearch" type="text" placeholder="Search dishes, categories or cuisines…"
+            oninput="globalSearchFn()">
+        </div>
+      </div>
+    </div>
+
+    <div class="parallax-strip">
+      <div class="scroll-ticker" id="ticker">
+        <span class="ticker-item"><span class="dot">✦</span> Starters</span>
+        <span class="ticker-item"><span class="dot">✦</span> Main Course</span>
+        <span class="ticker-item"><span class="dot">✦</span> Desserts</span>
+        <span class="ticker-item"><span class="dot">✦</span> Drinks</span>
+        <span class="ticker-item"><span class="dot">✦</span> Snacks</span>
+        <span class="ticker-item"><span class="dot">✦</span> Chef's Special</span>
+        <span class="ticker-item"><span class="dot">✦</span> Vegetarian</span>
+        <span class="ticker-item"><span class="dot">✦</span> Non-Vegetarian</span>
+        <span class="ticker-item"><span class="dot">✦</span> GST Inclusive</span>
+        <!-- duplicate for seamless loop -->
+        <span class="ticker-item"><span class="dot">✦</span> Starters</span>
+        <span class="ticker-item"><span class="dot">✦</span> Main Course</span>
+        <span class="ticker-item"><span class="dot">✦</span> Desserts</span>
+        <span class="ticker-item"><span class="dot">✦</span> Drinks</span>
+        <span class="ticker-item"><span class="dot">✦</span> Snacks</span>
+        <span class="ticker-item"><span class="dot">✦</span> Chef's Special</span>
+        <span class="ticker-item"><span class="dot">✦</span> Vegetarian</span>
+        <span class="ticker-item"><span class="dot">✦</span> Non-Vegetarian</span>
+        <span class="ticker-item"><span class="dot">✦</span> GST Inclusive</span>
+      </div>
+    </div>
+
+    <div class="category-section">
+      <h2 class="section-title reveal">Dine <span>Your Way</span></h2>
+      <div class="cat-grid">
+        <div class="cat-chip reveal" onclick="showPage('starters')"><span class="chip-icon">🍢</span> Starters</div>
+        <div class="cat-chip reveal" onclick="showPage('maincourse')"><span class="chip-icon">🍛</span> Main Course
+        </div>
+        <div class="cat-chip reveal" onclick="showPage('desserts')"><span class="chip-icon">🍮</span> Desserts</div>
+        <div class="cat-chip reveal" onclick="showPage('drinks')"><span class="chip-icon">🥤</span> Drinks</div>
+        <div class="cat-chip reveal" onclick="showPage('snacks')"><span class="chip-icon">🍿</span> Snacks</div>
+      </div>
+    </div>
+
+    <div class="food-section">
+      <h2 class="section-title reveal">🔥 Popular <span>Right Now</span></h2>
+      <div class="food-grid" id="homeGrid"></div>
+    </div>
+
+    <!-- ─── REVIEWS SECTION ─── -->
+    <div class="reviews-section">
+      <div class="reviews-header reveal">
+        <p class="hero-eyebrow" style="text-align:center;">✦ What Our Guests Say</p>
+        <h2 class="section-title" style="text-align:center; margin-bottom:6px;">Customer <span>Reviews</span></h2>
+        <p style="text-align:center; color:var(--text-muted); font-size:0.95rem; margin-bottom:40px;">Real experiences from our valued diners</p>
+      </div>
+
+      <div class="reviews-grid" id="reviewsGrid">
+        <!-- Reviews rendered here -->
+      </div>
+
+      <div class="review-form-wrap reveal">
+        <h3 class="review-form-title">✍️ Share Your Experience</h3>
+        <form class="review-form" onsubmit="submitReview(event)">
+          <div class="review-form-row">
+            <input class="review-input" id="reviewName" type="text" placeholder="Your Name" required>
+            <div class="star-picker" id="starPicker">
+              <span class="star-pick" data-val="1" onclick="pickStar(1)">★</span>
+              <span class="star-pick" data-val="2" onclick="pickStar(2)">★</span>
+              <span class="star-pick" data-val="3" onclick="pickStar(3)">★</span>
+              <span class="star-pick" data-val="4" onclick="pickStar(4)">★</span>
+              <span class="star-pick" data-val="5" onclick="pickStar(5)">★</span>
+            </div>
+          </div>
+          <textarea class="review-textarea" id="reviewText" placeholder="Tell us about your dining experience…" rows="3" required></textarea>
+          <button type="submit" class="btn-primary" style="align-self:flex-start; margin-top:10px;">Post Review</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ─── CONTACT SECTION ─── -->
+    <div class="contact-section">
+      <div class="contact-header reveal">
+        <h2 class="section-title" style="text-align:center; margin-bottom:6px;">Get In <span>Touch</span></h2>
+        <p style="text-align:center; color:var(--text-muted); font-size:0.95rem; margin-bottom:40px;">We'd love to hear from you. Book a table or ask us anything.</p>
+      </div>
+      
+      <div class="contact-content" style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; text-align: center;">
+        <div class="info-item" style="flex-direction: column; align-items: center; gap: 8px;">
+          <span class="info-icon">📍</span>
+          <div>
+            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Location</h4>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">123 Golden Avenue<br>Food City, FC 40001</p>
+          </div>
+        </div>
+        <div class="info-item" style="flex-direction: column; align-items: center; gap: 8px;">
+          <span class="info-icon">📞</span>
+          <div>
+            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Phone</h4>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">+91 98765 43210</p>
+          </div>
+        </div>
+        <div class="info-item" style="flex-direction: column; align-items: center; gap: 8px;">
+          <span class="info-icon">✉️</span>
+          <div>
+            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Email</h4>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">hello@everdine.com</p>
+          </div>
+        </div>
+        <div class="info-item" style="flex-direction: column; align-items: center; gap: 8px;">
+          <span class="info-icon">📸</span>
+          <div>
+            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Instagram</h4>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">@everdine_restaurant</p>
+          </div>
+        </div>
+        <div class="info-item" style="flex-direction: column; align-items: center; gap: 8px;">
+          <span class="info-icon">⏰</span>
+          <div>
+            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Hours</h4>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">11:00 AM - 11:00 PM</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── STARTERS PAGE ─── -->
+  <div class="page" id="page-starters">
+    <div class="page-header" data-bg="STARTERS">
+      <h1 class="reveal">Our <span>Starters</span></h1>
+      <p class="reveal">Crispy, tangy, and bold — the perfect beginning to your meal.</p>
+    </div>
+    <div class="food-section">
+      <div style="max-width:500px;margin:0 auto 24px;padding:0 0 0 0">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" placeholder="Search starters…"
+            oninput="filterPage('starters',this.value)">
+        </div>
+      </div>
+      <div class="food-grid" id="startersGrid"></div>
+    </div>
+  </div>
+
+  <!-- ─── MAIN COURSE PAGE ─── -->
+  <div class="page" id="page-maincourse">
+    <div class="page-header" data-bg="MAIN">
+      <h1 class="reveal">Main <span>Course</span></h1>
+      <p class="reveal">Hearty, rich, and deeply satisfying — the heart of Indian cuisine.</p>
+    </div>
+    <div class="food-section">
+      <div style="max-width:500px;margin:0 auto 24px">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" placeholder="Search main course…"
+            oninput="filterPage('maincourse',this.value)">
+        </div>
+      </div>
+      <div class="food-grid" id="maincourseGrid"></div>
+    </div>
+  </div>
+
+  <!-- ─── DESSERTS PAGE ─── -->
+  <div class="page" id="page-desserts">
+    <div class="page-header" data-bg="SWEETS">
+      <h1 class="reveal"><span>Desserts</span> & Sweets</h1>
+      <p class="reveal">End your meal on a sweet, indulgent note.</p>
+    </div>
+    <div class="food-section">
+      <div style="max-width:500px;margin:0 auto 24px">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" placeholder="Search desserts…"
+            oninput="filterPage('desserts',this.value)">
+        </div>
+      </div>
+      <div class="food-grid" id="dessertsGrid"></div>
+    </div>
+  </div>
+
+  <!-- ─── DRINKS PAGE ─── -->
+  <div class="page" id="page-drinks">
+    <div class="page-header" data-bg="DRINKS">
+      <h1 class="reveal">Drinks & <span>Beverages</span></h1>
+      <p class="reveal">Refresh and rejuvenate with our curated selection.</p>
+    </div>
+    <div class="food-section">
+      <div style="max-width:500px;margin:0 auto 24px">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" placeholder="Search drinks…"
+            oninput="filterPage('drinks',this.value)">
+        </div>
+      </div>
+      <div class="food-grid" id="drinksGrid"></div>
+    </div>
+  </div>
+
+  <!-- ─── SNACKS PAGE ─── -->
+  <div class="page" id="page-snacks">
+    <div class="page-header" data-bg="SNACKS">
+      <h1 class="reveal">Quick <span>Snacks</span></h1>
+      <p class="reveal">Perfect for quick bites and evening cravings.</p>
+    </div>
+    <div class="food-section">
+      <div style="max-width:500px;margin:0 auto 24px">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" placeholder="Search snacks…"
+            oninput="filterPage('snacks',this.value)">
+        </div>
+      </div>
+      <div class="food-grid" id="snacksGrid"></div>
+    </div>
+  </div>
+
+  <!-- ─── LOGIN PAGE ─── -->
+  <div class="page" id="page-login">
+    <div class="login-container">
+      <div class="login-box reveal">
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" onclick="switchAuth('login')">Login</button>
+          <button type="button" class="auth-tab" onclick="switchAuth('signup')">Sign Up</button>
+        </div>
+
+        <h2 class="login-title" id="authTitle">Welcome Back</h2>
+        <p class="login-sub" id="authSub">Sign in to track your orders.</p>
+        
+        <form id="loginForm" onsubmit="handleAuth(event)">
+          <div class="form-group signup-only" style="display: none;">
+            <label class="form-label">Full Name</label>
+            <input class="form-input" id="authName" type="text" placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input class="form-input" id="authPhone" type="tel" placeholder="+91 98765 43210" required>
+          </div>
+          <div class="form-group signup-only" style="display: none;">
+            <label class="form-label">Delivery Address</label>
+            <textarea class="form-textarea" id="authAddress" placeholder="Enter your full address..." rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" id="authPassword" type="password" placeholder="••••••••" required oninput="validatePassword()">
+          </div>
+          <div class="form-group signup-only" style="display: none;">
+            <label class="form-label">Confirm Password</label>
+            <input class="form-input" id="authConfirmPassword" type="password" placeholder="••••••••" oninput="validatePassword()">
+          </div>
+          
+          <button type="submit" id="authSubmitBtn" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ADMIN PAGE ─── -->
+  <div class="page" id="page-admin">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <h4>Dashboard</h4>
+        <button class="admin-nav-item active" onclick="switchAdmin('overview',this)">📊 Overview</button>
+        <h4 style="margin-top:16px">Menu</h4>
+        <button class="admin-nav-item" onclick="switchAdmin('menu-mgmt',this)">🍽 Manage Menu</button>
+        <button class="admin-nav-item" onclick="switchAdmin('add-item',this)">➕ Add Item</button>
+        <h4 style="margin-top:16px">Orders</h4>
+        <button class="admin-nav-item" onclick="switchAdmin('orders',this)">📦 Live Orders</button>
+        <h4 style="margin-top:16px">Billing</h4>
+        <button class="admin-nav-item" onclick="switchAdmin('billing',this)">💰 Billing Dashboard</button>
+        <div style="margin-top:32px;padding:0 8px">
+          <button class="btn-outline" style="width:100%;justify-content:center;font-size:0.8rem"
+            onclick="showPage('home')">← Back to Menu</button>
+        </div>
+      </aside>
+      <main class="admin-content">
+
+        <!-- Overview -->
+        <div class="admin-section active" id="admin-overview">
+          <h2 class="admin-title">Dashboard Overview</h2>
+          <div class="stats-grid">
+            <div class="stat-card reveal">
+              <div class="stat-icon">📦</div>
+              <div class="stat-num" id="statOrders">0</div>
+              <div class="stat-label">Total Orders Today</div>
+            </div>
+            <div class="stat-card reveal">
+              <div class="stat-icon">💰</div>
+              <div class="stat-num" id="statRevenue">₹0</div>
+              <div class="stat-label">Revenue Today</div>
+            </div>
+            <div class="stat-card reveal">
+              <div class="stat-icon">🍽</div>
+              <div class="stat-num" id="statItems">0</div>
+              <div class="stat-label">Menu Items</div>
+            </div>
+            <div class="stat-card reveal">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-num" id="statPending">0</div>
+              <div class="stat-label">Pending Orders</div>
+            </div>
+          </div>
+          <h3 class="section-title" style="font-size:1.1rem;margin-bottom:16px">Recent Orders</h3>
+          <div id="overviewOrders"></div>
+        </div>
+
+        <!-- Menu Management -->
+        <div class="admin-section" id="admin-menu-mgmt">
+          <h2 class="admin-title">Manage Menu Items</h2>
+          <div style="overflow-x:auto">
+            <table class="data-table" id="adminMenuTable">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminMenuBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Add Item -->
+        <div class="admin-section" id="admin-add-item">
+          <h2 class="admin-title" id="addItemTitle">Add New Item</h2>
+          <form class="admin-form" onsubmit="saveMenuItem(event)">
+            <input type="hidden" id="editItemId">
+            <div class="form-group">
+              <label class="form-label">Item Name</label>
+              <input class="form-input" id="fName" placeholder="e.g. Paneer Tikka" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-select" id="fCategory">
+                  <option value="starters">Starters</option>
+                  <option value="maincourse">Main Course</option>
+                  <option value="desserts">Desserts</option>
+                  <option value="drinks">Drinks</option>
+                  <option value="snacks">Snacks</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Type</label>
+                <select class="form-select" id="fType">
+                  <option value="veg">Veg</option>
+                  <option value="nonveg">Non-Veg</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Price (₹)</label>
+                <input class="form-input" id="fPrice" type="number" min="1" placeholder="249" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Image URL</label>
+                <input class="form-input" id="fImg" placeholder="https://…" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea class="form-textarea" id="fDesc" placeholder="Briefly describe the dish…"></textarea>
+            </div>
+            <button type="submit" class="submit-btn">💾 Save Item</button>
+          </form>
+        </div>
+
+        <!-- Orders -->
+        <div class="admin-section" id="admin-orders">
+          <h2 class="admin-title">Live Orders</h2>
+          <div id="ordersTable"></div>
+        </div>
+
+        <!-- Billing -->
+        <div class="admin-section" id="admin-billing">
+          <h2 class="admin-title">Billing Dashboard</h2>
+          <div class="stats-grid" style="margin-bottom:24px">
+            <div class="stat-card">
+              <div class="stat-icon">📈</div>
+              <div class="stat-num" id="billTotal">₹0</div>
+              <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🧾</div>
+              <div class="stat-num" id="billCount">0</div>
+              <div class="stat-label">Invoices Generated</div>
+            </div>
+          </div>
+          <h3 class="section-title" style="font-size:1.1rem;margin-bottom:16px">Sales Records</h3>
+          <div class="sales-list" id="salesList"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ─── CART SIDEBAR ─── -->
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h3>🛒 Your Order</h3>
+      <button class="cart-close" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty">
+        <div class="empty-icon">🍽</div>
+        <p>Your cart is empty.<br>Add some delicious items!</p>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+      <div class="cart-tax"><span>GST (5%)</span><span id="cartGST">₹0</span></div>
+      <div class="cart-total"><span>Total</span><span id="cartTotalAmt">₹0</span></div>
+      <select class="table-select" id="tableSelect">
+        <option value="">— Select Table / Takeaway —</option>
+        <option value="Takeaway">🛍 Takeaway</option>
+        <option value="Table 1">🪑 Table 1</option>
+        <option value="Table 2">🪑 Table 2</option>
+        <option value="Table 3">🪑 Table 3</option>
+        <option value="Table 4">🪑 Table 4</option>
+        <option value="Table 5">🪑 Table 5</option>
+        <option value="Table 6">🪑 Table 6</option>
+      </select>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="place-order-btn" id="placeOrderOnlineBtn" onclick="placeOrder('Online')" style="flex:1">💳 Pay Online</button>
+        <button class="place-order-btn" id="placeOrderCashBtn" onclick="placeOrder('Cash')" style="flex:1; background:var(--bg-card); color:var(--amber); border:1px solid var(--amber);">💵 Pay Counter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── FAVOURITES SIDEBAR ─── -->
+  <div class="cart-overlay" id="favOverlay" onclick="toggleFavs()"></div>
+  <div class="cart-sidebar fav-sidebar" id="favSidebar">
+    <div class="cart-header">
+      <h3>❤️ My Favourites</h3>
+      <button class="cart-close" onclick="toggleFavs()">✕</button>
+    </div>
+    <div class="cart-items" id="favItems">
+      <div class="cart-empty">
+        <div class="empty-icon">🤍</div>
+        <p>No favourites yet.<br>Tap ❤️ on any dish to save it!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── BILL MODAL ─── -->
+  <div class="modal-overlay" id="billModal">
+    <div class="bill-modal">
+      <div class="bill-header">
+        <h2>SpiceCraft</h2>
+        <p id="billTableInfo">Table / Takeaway</p>
+        <p id="billDateTime" style="font-size:0.78rem;color:var(--text-dim);margin-top:4px"></p>
+      </div>
+      <hr class="bill-divider">
+      <div id="billItemsList"></div>
+      <hr class="bill-divider">
+      <div class="bill-row"><span>Subtotal</span><span id="billSub"></span></div>
+      <div class="bill-row"><span>GST (5%)</span><span id="billGst"></span></div>
+      <div class="bill-row total-row"><span>Total Amount</span><span id="billGrand"></span></div>
+      <div class="bill-actions">
+        <button class="bill-close-btn" onclick="closeBill()">Close</button>
+        <button class="bill-print-btn" onclick="window.print()">🖨 Print Bill</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TOAST ─── -->
+  <div class="toast" id="toast"></div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ── Remove white background from logo for navbar + favicon via canvas ──
+    (function () {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        // Make near-white pixels fully transparent
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i], g = data[i + 1], b = data[i + 2];
+          if (r > 215 && g > 215 && b > 215) {
+            data[i + 3] = 0;
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        const transparentPng = canvas.toDataURL('image/png');
+        // Update navbar logo
+        const navLogo = document.getElementById('navLogo');
+        if (navLogo) navLogo.src = transparentPng;
+        // Update tab favicon
+        const favicon = document.getElementById('favicon');
+        if (favicon) {
+          favicon.href = transparentPng;
+          favicon.type = 'image/png';
+        }
+      };
+      img.src = 'logo.jpeg';
+    })();
+
+    // Initialize Supabase
+    const supabaseUrl = 'https://rgwvowprdhrujcydhvog.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnd3Zvd3ByZGhydWpjeWRodm9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NzgwMjcsImV4cCI6MjA5ODE1NDAyN30.olMsD_l8c3KlQmVVCg-RhsTGLyDPTftvAxPfyBzS_4s';
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // ══════════════════════════════════════════════
+    //  DATA
+    // ══════════════════════════════════════════════
+    // Fallback hardcoded items used only if DB is empty or unreachable
+    const FALLBACK_MENU = [
+      // STARTERS
+      { id: 1, name: 'Paneer Tikka', category: 'starters', type: 'veg', price: 249, desc: 'Marinated cottage cheese cubes grilled in a tandoor with spices and vegetables.', img: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400&q=80' },
+      { id: 2, name: 'Chicken 65', category: 'starters', type: 'nonveg', price: 299, desc: 'Crispy deep-fried chicken marinated in red chillies and yogurt, South Indian style.', img: 'https://images.unsplash.com/photo-1610057099431-d73a1c9d2f2f?w=400&q=80' },
+      { id: 3, name: 'Veg Spring Rolls', category: 'starters', type: 'veg', price: 179, desc: 'Golden crispy rolls stuffed with spiced vegetables and noodles, served with sweet chilli sauce.', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80' },
+      { id: 4, name: 'Fish Tikka', category: 'starters', type: 'nonveg', price: 329, desc: 'Tender fish marinated in herbs, grilled to perfection on skewers.', img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&q=80' },
+      { id: 5, name: 'Hara Bhara Kebab', category: 'starters', type: 'veg', price: 199, desc: 'Green patties of spinach, peas, and paneer, shallow-fried and served with mint chutney.', img: 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&q=80' },
+      { id: 6, name: 'Mutton Seekh Kebab', category: 'starters', type: 'nonveg', price: 379, desc: 'Minced mutton mixed with aromatic spices, shaped on skewers and cooked in tandoor.', img: 'https://images.unsplash.com/photo-1601050690117-94f5f7a78ef7?w=400&q=80' },
+      // MAIN COURSE
+      { id: 7, name: 'Butter Chicken', category: 'maincourse', type: 'nonveg', price: 349, desc: 'Tender chicken in a rich, creamy tomato-based makhani gravy, best with naan.', img: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=400&q=80' },
+      { id: 8, name: 'Dal Makhani', category: 'maincourse', type: 'veg', price: 249, desc: 'Slow-cooked black lentils in buttery tomato gravy, a North Indian classic.', img: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400&q=80' },
+      { id: 9, name: 'Biryani', category: 'maincourse', type: 'nonveg', price: 399, desc: 'Aromatic basmati rice layered with slow-cooked chicken and whole spices.', img: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=400&q=80' },
+      { id: 10, name: 'Paneer Butter Masala', category: 'maincourse', type: 'veg', price: 299, desc: 'Soft cottage cheese in a luscious, mildly spiced tomato-cashew gravy.', img: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80' },
+      { id: 11, name: 'Fish Curry', category: 'maincourse', type: 'nonveg', price: 379, desc: 'Coastal-style tangy fish curry cooked in coconut milk with tamarind and curry leaves.', img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&q=80' },
+      { id: 12, name: 'Chole Bhature', category: 'maincourse', type: 'veg', price: 229, desc: 'Fluffy deep-fried bread served with spiced chickpea masala — a Punjabi favourite.', img: 'https://images.unsplash.com/photo-1628294895950-9805252a4c5a?w=400&q=80' },
+      // DESSERTS
+      { id: 13, name: 'Gulab Jamun', category: 'desserts', type: 'veg', price: 99, desc: 'Soft milk-solid dumplings soaked in rose-flavoured sugar syrup, served warm.', img: 'https://images.unsplash.com/photo-1620716259081-83a9b2cb6f0a?w=400&q=80' },
+      { id: 14, name: 'Chocolate Lava Cake', category: 'desserts', type: 'veg', price: 199, desc: 'Warm chocolate cake with a gooey molten centre, served with vanilla ice cream.', img: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=400&q=80' },
+      { id: 15, name: 'Kulfi', category: 'desserts', type: 'veg', price: 129, desc: 'Traditional Indian ice cream made with condensed milk, cardamom, and pistachios.', img: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=400&q=80' },
+      { id: 16, name: 'Rasgulla', category: 'desserts', type: 'veg', price: 119, desc: 'Spongy white cottage cheese balls soaked in light sugar syrup.', img: 'https://images.unsplash.com/photo-1620716259081-83a9b2cb6f0a?w=400&q=80' },
+      { id: 17, name: 'Mango Mousse', category: 'desserts', type: 'veg', price: 149, desc: 'Light and airy mousse made with fresh Alphonso mango pulp and cream.', img: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80' },
+      // DRINKS
+      { id: 18, name: 'Mango Lassi', category: 'drinks', type: 'veg', price: 99, desc: 'Creamy yogurt-based drink blended with ripe mango pulp and a pinch of cardamom.', img: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&q=80' },
+      { id: 19, name: 'Masala Chai', category: 'drinks', type: 'veg', price: 59, desc: 'Classic spiced Indian tea brewed with ginger, cardamom, cloves, and milk.', img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=80' },
+      { id: 20, name: 'Virgin Mojito', category: 'drinks', type: 'veg', price: 129, desc: 'Refreshing blend of mint, lime, soda, and sugar — the perfect cooler.', img: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80' },
+      { id: 21, name: 'Fresh Lime Soda', category: 'drinks', type: 'veg', price: 79, desc: 'Zesty fresh lime juice topped with chilled soda water, sweet or salted.', img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=80' },
+      { id: 22, name: 'Cold Coffee', category: 'drinks', type: 'veg', price: 149, desc: 'Rich blended coffee with ice cream and cold milk — a café favourite.', img: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=80' },
+    ];
+
+    // Maps a Supabase row → frontend item format
+    function dbRowToItem(row) {
+      return {
+        id: row.id,
+        name: row.name,
+        category: row.category,
+        type: row.type || 'veg',
+        price: parseFloat(row.price),
+        desc: row.description || '',
+        img: row.image_url || 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400&q=80',
+      };
+    }
+
+    let menuItems = []; // Populated from Supabase on load
+
+    let cart = {};       // { itemId: qty }
+    let orders = JSON.parse(localStorage.getItem('everdine_orders')) || [];     // placed orders
+    let nextOrderId = parseInt(localStorage.getItem('everdine_nextOrderId')) || 1001;
+    // Favourites – persisted in localStorage as array of item ids
+    let favourites = new Set(JSON.parse(localStorage.getItem('everdine_favs') || '[]'));
+
+    let reviews = [
+      { name: "Aarav S.", stars: 5, text: "The Butter Chicken here is absolutely phenomenal. Best I've had in the city!" },
+      { name: "Priya M.", stars: 4, text: "Great ambiance and excellent service. The starters were top-notch." },
+      { name: "Rohan D.", stars: 5, text: "A truly grand dining experience. The Chocolate Lava Cake is a must-try!" }
+    ];
+    let selectedRating = 0;
+
+    // ══════════════════════════════════════════════
+    //  PAGE ROUTING
+    // ══════════════════════════════════════════════
+    function showPage(page, push = true) {
+      if (push) {
+        window.location.hash = page;
+        return;
+      }
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      const el = document.getElementById('page-' + page);
+      if (el) el.classList.add('active');
+      const btn = [...document.querySelectorAll('.nav-link')].find(b => b.textContent.toLowerCase().includes(page === 'home' ? 'home' : page === 'maincourse' ? 'main' : page));
+      if (btn) btn.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(initReveal, 100);
+
+      if (page === 'home') renderHomeGrid();
+      if (page === 'starters') renderCategoryGrid('starters');
+      if (page === 'maincourse') renderCategoryGrid('maincourse');
+      if (page === 'desserts') renderCategoryGrid('desserts');
+      if (page === 'drinks') renderCategoryGrid('drinks');
+      if (page === 'snacks') renderCategoryGrid('snacks');
+      if (page === 'admin') refreshAdmin();
+
+      const navLinks = document.querySelector('.nav-links');
+      if (navLinks) navLinks.classList.remove('open');
+    }
+
+    window.addEventListener('hashchange', () => {
+      const page = window.location.hash.replace('#', '') || 'home';
+      showPage(page, false);
+    });
+
+    // ══════════════════════════════════════════════
+    //  RENDER HELPERS
+    // ══════════════════════════════════════════════
+    function buildCard(item) {
+      const qty = cart[item.id] || 0;
+      const badgeType = item.type === 'veg' ? 'badge-veg' : 'badge-nonveg';
+      const badgeLabel = item.type === 'veg' ? '🟢 Veg' : '🔴 Non-Veg';
+      const isFav = favourites.has(item.id);
+      const control = qty > 0
+        ? `<div class="qty-ctrl">
+         <button class="qty-btn" onclick="changeQty(${item.id},-1,event)">−</button>
+         <span class="qty-num">${qty}</span>
+         <button class="qty-btn" onclick="changeQty(${item.id},1,event)">+</button>
+       </div>`
+        : `<button class="add-btn" onclick="addToCart(${item.id},event)">+ Add</button>`;
+      return `<div class="food-card reveal" id="card-${item.id}">
+    <div class="card-img-wrap">
+      <img src="${item.img}" alt="${item.name}" loading="lazy">
+      <span class="card-badge ${badgeType}">${badgeLabel}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-name">${item.name}</div>
+      <div class="card-desc">${item.desc}</div>
+      <div class="card-footer">
+        <div class="card-price"><span>₹</span>${item.price}</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="heart-btn${isFav ? ' active' : ''}" onclick="toggleFav(${item.id},event)" title="${isFav ? 'Remove from favourites' : 'Add to favourites'}">${isFav ? '❤️' : '🤍'}</button>
+          ${control}
+        </div>
+      </div>
+    </div>
+  </div>`;
+    }
+
+    function renderHomeGrid() {
+      const popular = [...menuItems].sort(() => 0.5 - Math.random()).slice(0, 8);
+      document.getElementById('homeGrid').innerHTML = popular.map(buildCard).join('');
+      renderReviews();
+      setTimeout(initReveal, 80);
+    }
+
+    function renderCategoryGrid(cat, filterText = '') {
+      const items = menuItems.filter(i => i.category === cat &&
+        (filterText === '' || i.name.toLowerCase().includes(filterText.toLowerCase()) || i.desc.toLowerCase().includes(filterText.toLowerCase())));
+      const gridId = cat + 'Grid';
+      document.getElementById(gridId).innerHTML = items.length
+        ? items.map(buildCard).join('')
+        : '<p style="color:var(--text-dim);padding:40px 0;grid-column:1/-1;text-align:center">No items found.</p>';
+      setTimeout(initReveal, 80);
+    }
+
+    function filterPage(cat, val) { renderCategoryGrid(cat, val); }
+
+    function globalSearchFn() {
+      const val = document.getElementById('globalSearch').value.trim();
+      if (!val) return;
+      const hits = menuItems.filter(i => i.name.toLowerCase().includes(val.toLowerCase()));
+      document.getElementById('homeGrid').innerHTML = hits.length
+        ? hits.map(buildCard).join('')
+        : '<p style="color:var(--text-dim);padding:40px;grid-column:1/-1;text-align:center">No results for "' + val + '"</p>';
+      setTimeout(initReveal, 80);
+    }
+
+    // ══════════════════════════════════════════════
+    //  REVIEWS LOGIC
+    // ══════════════════════════════════════════════
+    function renderReviews() {
+      const grid = document.getElementById('reviewsGrid');
+      if (!grid) return;
+      
+      let html = '';
+      reviews.forEach(r => {
+        let starsHtml = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+        html += `<div class="review-card reveal">
+          <div class="review-header">
+            <div class="review-avatar">${r.name.charAt(0)}</div>
+            <div>
+              <div class="review-name">${r.name}</div>
+              <div class="review-stars">${starsHtml}</div>
+            </div>
+          </div>
+          <div class="review-text">"${r.text}"</div>
+        </div>`;
+      });
+      grid.innerHTML = html;
+    }
+
+    function pickStar(val) {
+      selectedRating = val;
+      document.querySelectorAll('.star-pick').forEach(el => {
+        if (parseInt(el.getAttribute('data-val')) <= val) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+    }
+
+    function submitReview(e) {
+      e.preventDefault();
+      if (selectedRating === 0) {
+        showToast('Please select a star rating! ⭐');
+        return;
+      }
+      const name = document.getElementById('reviewName').value;
+      const text = document.getElementById('reviewText').value;
+      
+      reviews.unshift({ name, stars: selectedRating, text });
+      if (reviews.length > 6) reviews.pop(); // Keep only latest 6
+      
+      renderReviews();
+      
+      // Reset form
+      document.getElementById('reviewName').value = '';
+      document.getElementById('reviewText').value = '';
+      pickStar(0);
+      
+      showToast('Thank you for your review! 🎉');
+      
+      setTimeout(initReveal, 100);
+    }
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value;
+      
+      // Reset form
+      document.getElementById('contactName').value = '';
+      document.getElementById('contactEmail').value = '';
+      document.getElementById('contactMessage').value = '';
+      
+      showToast(`Thanks for reaching out, ${name}! We'll get back to you shortly. ✉️`);
+    }
+
+    // ══════════════════════════════════════════════
+    //  LOGIN LOGIC
+    // ══════════════════════════════════════════════
+    let currentAuthMode = 'login';
+
+    function switchAuth(mode) {
+      currentAuthMode = mode;
+      
+      // Update tabs
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      // Update UI elements
+      const isSignup = mode === 'signup';
+      document.getElementById('authTitle').textContent = isSignup ? 'Create Account' : 'Welcome Back';
+      document.getElementById('authSub').textContent = isSignup ? 'Join us for a grand dining experience.' : 'Sign in to track your orders.';
+      document.getElementById('authSubmitBtn').textContent = isSignup ? 'Sign Up' : 'Login';
+      
+      // Toggle visibility and required attr for signup-only fields
+      document.querySelectorAll('.signup-only').forEach(el => {
+        el.style.display = isSignup ? 'block' : 'none';
+        const input = el.querySelector('input, textarea');
+        if (input) {
+          if (isSignup) input.setAttribute('required', 'true');
+          else input.removeAttribute('required');
+        }
+      });
+      validatePassword();
+    }
+
+    function validatePassword() {
+      const pwd = document.getElementById('authPassword');
+      const confirmPwd = document.getElementById('authConfirmPassword');
+      if (currentAuthMode === 'signup' && pwd.value !== confirmPwd.value) {
+        confirmPwd.setCustomValidity("Passwords do not match");
+      } else {
+        confirmPwd.setCustomValidity('');
+      }
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      
+      const phone = document.getElementById('authPhone').value;
+      const pwd = document.getElementById('authPassword').value;
+      const submitBtn = document.getElementById('authSubmitBtn');
+      
+      // Supabase Auth requires an email. We will seamlessly generate one from the phone number.
+      const fakeEmail = `${phone}@everdine.local`;
+      
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Processing...';
+
+      try {
+        if (currentAuthMode === 'signup') {
+          const confirmPwd = document.getElementById('authConfirmPassword').value;
+          if (pwd !== confirmPwd) {
+            showToast('❌ Passwords do not match!');
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Sign Up';
+            return;
+          }
+          
+          const name = document.getElementById('authName').value;
+          
+          // 1. Sign up with Supabase
+          const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+            email: fakeEmail,
+            password: pwd,
+          });
+
+          if (authError) throw authError;
+
+          // 2. Add to public.users table
+          const { error: dbError } = await supabaseClient.from('users').insert([{
+            id: authData.user.id,
+            name: name,
+            email: fakeEmail,
+            role: 'Customer'
+          }]);
+
+          if (dbError) throw dbError;
+
+          document.getElementById('navLoginBtn').innerHTML = `👤 ${name.split(' ')[0]}`;
+          showToast(`Welcome, ${name}! Your account has been created. 🎉`);
+          
+        } else {
+          // Login
+          const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+            email: fakeEmail,
+            password: pwd,
+          });
+
+          if (authError) throw authError;
+
+          // Fetch user profile
+          const { data: userData, error: dbError } = await supabaseClient
+            .from('users')
+            .select('name, role')
+            .eq('id', authData.user.id)
+            .single();
+
+          if (userData) {
+            document.getElementById('navLoginBtn').innerHTML = `👤 ${userData.name.split(' ')[0]}`;
+            if (userData.role === 'Admin') {
+              document.getElementById('navAdminBtn').style.display = 'inline-flex';
+            }
+          } else {
+            document.getElementById('navLoginBtn').innerHTML = `👤 User`;
+          }
+          
+          showToast(`Welcome back! You have successfully logged in. 🎉`);
+        }
+        
+        // Reset form and go to home
+        document.getElementById('loginForm').reset();
+        showPage('home');
+        
+      } catch (err) {
+        console.error(err);
+        showToast(`❌ Error: ${err.message}`);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = currentAuthMode === 'signup' ? 'Sign Up' : 'Login';
+      }
+    }
+
+    // ══════════════════════════════════════════════
+    //  CART LOGIC
+    // ══════════════════════════════════════════════
+    function addToCart(id, e) {
+      e && e.stopPropagation();
+      cart[id] = (cart[id] || 0) + 1;
+      updateCartUI(); refreshCards();
+      showToast('Added to cart! 🛒');
+    }
+
+    function changeQty(id, delta, e) {
+      e && e.stopPropagation();
+      cart[id] = (cart[id] || 0) + delta;
+      if (cart[id] <= 0) delete cart[id];
+      updateCartUI(); refreshCards();
+    }
+
+    function refreshCards() {
+      // Re-render controls for all visible cards
+      document.querySelectorAll('[id^="card-"]').forEach(card => {
+        const id = parseInt(card.id.split('-')[1]);
+        const item = menuItems.find(i => i.id === id);
+        if (!item) return;
+        const qty = cart[id] || 0;
+        const footer = card.querySelector('.card-footer');
+        if (!footer) return;
+        const ctrl = qty > 0
+          ? `<div class="qty-ctrl">
+           <button class="qty-btn" onclick="changeQty(${id},-1,event)">−</button>
+           <span class="qty-num">${qty}</span>
+           <button class="qty-btn" onclick="changeQty(${id},1,event)">+</button>
+         </div>`
+          : `<button class="add-btn" onclick="addToCart(${id},event)">+ Add</button>`;
+        footer.querySelector('.add-btn, .qty-ctrl') && footer.querySelector('.add-btn, .qty-ctrl').remove();
+        footer.insertAdjacentHTML('beforeend', ctrl);
+      });
+    }
+
+    function toggleCart() {
+      // Close favs if open
+      document.getElementById('favOverlay').classList.remove('open');
+      document.getElementById('favSidebar').classList.remove('open');
+      document.getElementById('cartOverlay').classList.toggle('open');
+      document.getElementById('cartSidebar').classList.toggle('open');
+      renderCartSidebar();
+    }
+
+    // ══════════════════════════════════════════════
+    //  FAVOURITES
+    // ══════════════════════════════════════════════
+    function saveFavs() {
+      localStorage.setItem('everdine_favs', JSON.stringify([...favourites]));
+    }
+
+    function updateFavBadge() {
+      const badge = document.getElementById('favBadge');
+      if (badge) badge.textContent = favourites.size;
+    }
+
+    function toggleFav(id, e) {
+      e && e.stopPropagation();
+      if (favourites.has(id)) {
+        favourites.delete(id);
+        showToast('Removed from favourites 🤍');
+      } else {
+        favourites.add(id);
+        showToast('Added to favourites ❤️');
+      }
+      saveFavs();
+      updateFavBadge();
+      // Update heart on the specific card without full re-render
+      const card = document.getElementById('card-' + id);
+      if (card) {
+        const btn = card.querySelector('.heart-btn');
+        if (btn) {
+          const isFav = favourites.has(id);
+          btn.textContent = isFav ? '❤️' : '🤍';
+          btn.title = isFav ? 'Remove from favourites' : 'Add to favourites';
+          btn.classList.toggle('active', isFav);
+        }
+      }
+      // If favs sidebar is open, refresh it live
+      if (document.getElementById('favSidebar').classList.contains('open')) {
+        renderFavsSidebar();
+      }
+    }
+
+    function toggleFavs() {
+      // Close cart if open
+      document.getElementById('cartOverlay').classList.remove('open');
+      document.getElementById('cartSidebar').classList.remove('open');
+      document.getElementById('favOverlay').classList.toggle('open');
+      document.getElementById('favSidebar').classList.toggle('open');
+      renderFavsSidebar();
+    }
+
+    function renderFavsSidebar() {
+      const wrap = document.getElementById('favItems');
+      if (!favourites.size) {
+        wrap.innerHTML = '<div class="cart-empty"><div class="empty-icon">🤍</div><p>No favourites yet.<br>Tap ❤️ on any dish to save it!</p></div>';
+        return;
+      }
+      let html = '';
+      favourites.forEach(id => {
+        const item = menuItems.find(i => i.id == id);
+        if (!item) return;
+        const qty = cart[id] || 0;
+        const ctrl = qty > 0
+          ? `<div class="qty-ctrl" style="transform:scale(0.88)">
+               <button class="qty-btn" onclick="changeQty(${id},-1,event);renderFavsSidebar()">−</button>
+               <span class="qty-num">${qty}</span>
+               <button class="qty-btn" onclick="changeQty(${id},1,event);renderFavsSidebar()">+</button>
+             </div>`
+          : `<button class="add-btn" style="font-size:0.8rem;padding:6px 14px" onclick="addToCart(${id},event);renderFavsSidebar()">+ Add</button>`;
+        html += `<div class="fav-item">
+          <img class="fav-img" src="${item.img}" alt="${item.name}">
+          <div class="fav-info">
+            <div class="fav-name">${item.name}</div>
+            <div class="fav-price">₹${item.price}</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+              ${ctrl}
+              <button class="fav-remove-btn" onclick="toggleFav(${id},event)" title="Remove">✕</button>
+            </div>
+          </div>
+        </div>`;
+      });
+      wrap.innerHTML = html;
+    }
+
+
+    function renderCartSidebar() {
+      const keys = Object.keys(cart);
+      const wrap = document.getElementById('cartItems');
+      if (!keys.length) {
+        wrap.innerHTML = '<div class="cart-empty"><div class="empty-icon">🍽</div><p>Your cart is empty.<br>Add some delicious items!</p></div>';
+        document.getElementById('cartSubtotal').textContent = '₹0';
+        document.getElementById('cartGST').textContent = '₹0';
+        document.getElementById('cartTotalAmt').textContent = '₹0';
+        document.getElementById('cartBadge').textContent = '0';
+        const onlineBtn = document.getElementById('placeOrderOnlineBtn');
+        const cashBtn = document.getElementById('placeOrderCashBtn');
+        if (onlineBtn) onlineBtn.disabled = true;
+        if (cashBtn) cashBtn.disabled = true;
+        return;
+      }
+      let subtotal = 0;
+      let html = '';
+      keys.forEach(id => {
+        const item = menuItems.find(i => i.id == id);
+        if (!item) return;
+        const line = item.price * cart[id];
+        subtotal += line;
+        html += `<div class="cart-item">
+      <img class="ci-img" src="${item.img}" alt="${item.name}">
+      <div class="ci-info">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-price">₹${line}</div>
+        <div class="ci-controls">
+          <button class="qty-btn" onclick="changeQty(${id},-1,event);renderCartSidebar()" style="width:24px;height:24px">−</button>
+          <span class="qty-num">${cart[id]}</span>
+          <button class="qty-btn" onclick="changeQty(${id},1,event);renderCartSidebar()" style="width:24px;height:24px">+</button>
+          <button class="ci-remove" onclick="delete cart[${id}];refreshCards();renderCartSidebar()">🗑 Remove</button>
+        </div>
+      </div>
+    </div>`;
+      });
+      wrap.innerHTML = html;
+      const gst = Math.round(subtotal * 0.05);
+      const total = subtotal + gst;
+      document.getElementById('cartSubtotal').textContent = '₹' + subtotal;
+      document.getElementById('cartGST').textContent = '₹' + gst;
+      document.getElementById('cartTotalAmt').textContent = '₹' + total;
+      const totalQty = Object.values(cart).reduce((a, b) => a + b, 0);
+      document.getElementById('cartBadge').textContent = totalQty;
+      const onlineBtn = document.getElementById('placeOrderOnlineBtn');
+      const cashBtn = document.getElementById('placeOrderCashBtn');
+      if (onlineBtn) onlineBtn.disabled = false;
+      if (cashBtn) cashBtn.disabled = false;
+    }
+
+    function updateCartUI() {
+      const totalQty = Object.values(cart).reduce((a, b) => a + b, 0);
+      document.getElementById('cartBadge').textContent = totalQty;
+    }
+
+    // ══════════════════════════════════════════════
+    //  ORDER PLACEMENT
+    // ══════════════════════════════════════════════
+    async function placeOrder(paymentMethod) {
+      const table = document.getElementById('tableSelect').value;
+      if (!table) { showToast('⚠ Please select a table or takeaway!'); return; }
+      if (!Object.keys(cart).length) { showToast('Your cart is empty!'); return; }
+
+      const onlineBtn = document.getElementById('placeOrderOnlineBtn');
+      const cashBtn = document.getElementById('placeOrderCashBtn');
+      if (onlineBtn) onlineBtn.disabled = true;
+      if (cashBtn) cashBtn.disabled = true;
+
+      try {
+        let subtotal = 0;
+        const items = [];
+        Object.keys(cart).forEach(id => {
+          const item = menuItems.find(i => i.id == id);
+          if (!item) return;
+          const line = item.price * cart[id];
+          subtotal += line;
+          items.push({ menu_item_id: item.id, name: item.name, quantity: cart[id], price: item.price, line });
+        });
+        const gst = Math.round(subtotal * 0.05);
+        const total = subtotal + gst;
+
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const customer_id = session ? session.user.id : null;
+
+        // Call backend API
+        const response = await fetch('http://localhost:5000/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_id,
+            table_no: table,
+            items: items,
+            payment_method: paymentMethod
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to place order');
+
+        const orderId = data.order.id;
+        const finalOrder = {
+          id: orderId, table, items: items.map(i => ({...i, qty: i.quantity})), subtotal, gst, total,
+          status: 'Pending', time: new Date().toLocaleTimeString()
+        };
+
+        if (paymentMethod === 'Online' && data.razorpay_order) {
+          // Initialize Razorpay Checkout
+          const options = {
+            key: data.key_id,
+            amount: data.razorpay_order.amount,
+            currency: "INR",
+            name: "Everdine Restaurant",
+            description: "Order #" + orderId,
+            order_id: data.razorpay_order.id,
+            handler: async function (response) {
+              // Verify Payment
+              try {
+                const verifyRes = await fetch('http://localhost:5000/api/payment/verify', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    order_id: orderId,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature
+                  })
+                });
+                const verifyData = await verifyRes.json();
+                if (!verifyRes.ok) throw new Error(verifyData.message || 'Verification failed');
+                
+                showToast('✅ Payment Successful!');
+                finishOrderUI(finalOrder);
+              } catch (err) {
+                showToast('❌ Payment verification failed: ' + err.message);
+              }
+            },
+            prefill: {
+              name: session ? (session.user.user_metadata?.name || "Guest") : "Guest",
+              contact: "9999999999"
+            },
+            theme: { color: "#e8a020" }
+          };
+          const rzp = new window.Razorpay(options);
+          rzp.on('payment.failed', function (response){
+            showToast('❌ Payment Failed');
+          });
+          rzp.open();
+        } else {
+          // Cash payment - finish immediately
+          showToast('🎉 Order #' + orderId + ' placed successfully!');
+          finishOrderUI(finalOrder);
+        }
+
+      } catch (err) {
+        console.error(err);
+        showToast('❌ Error: ' + err.message);
+      } finally {
+        if (onlineBtn) onlineBtn.disabled = false;
+        if (cashBtn) cashBtn.disabled = false;
+      }
+    }
+
+    function finishOrderUI(finalOrder) {
+      showBill(finalOrder);
+      cart = {};
+      refreshCards();
+      updateCartUI();
+      document.getElementById('cartSidebar').classList.remove('open');
+      document.getElementById('cartOverlay').classList.remove('open');
+      if (document.getElementById('page-admin').classList.contains('active')) {
+        refreshAdmin();
+      }
+    }
+
+    function showBill(order) {
+      document.getElementById('billTableInfo').textContent = order.table;
+      document.getElementById('billDateTime').textContent = new Date().toLocaleString();
+      let html = '';
+      order.items.forEach(i => {
+        html += `<div class="bill-row item-row"><span>${i.name} × ${i.qty}</span><span>₹${i.line}</span></div>`;
+      });
+      document.getElementById('billItemsList').innerHTML = html;
+      document.getElementById('billSub').textContent = '₹' + order.subtotal;
+      document.getElementById('billGst').textContent = '₹' + order.gst;
+      document.getElementById('billGrand').textContent = '₹' + order.total;
+      document.getElementById('billModal').classList.add('open');
+    }
+
+    function closeBill() {
+      document.getElementById('billModal').classList.remove('open');
+    }
+
+    // ══════════════════════════════════════════════
+    //  ADMIN
+    // ══════════════════════════════════════════════
+    function switchAdmin(section, btn) {
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.admin-nav-item').forEach(b => b.classList.remove('active'));
+      document.getElementById('admin-' + section).classList.add('active');
+      btn.classList.add('active');
+      refreshAdmin();
+    }
+
+    async function fetchLiveOrders() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('orders')
+          .select(`
+            id,
+            table_no,
+            status,
+            total_amount,
+            created_at,
+            order_items (
+              quantity,
+              price,
+              menu_items (
+                name
+              )
+            )
+          `)
+          .order('id', { ascending: true });
+
+        if (error) throw error;
+        
+        orders = data.map(o => ({
+          id: o.id,
+          table: o.table_no,
+          total: parseFloat(o.total_amount),
+          status: o.status,
+          time: new Date(o.created_at).toLocaleTimeString(),
+          items: o.order_items.map(oi => ({
+            name: oi.menu_items ? oi.menu_items.name : 'Unknown Item',
+            qty: oi.quantity,
+            price: parseFloat(oi.price),
+            line: parseFloat(oi.price) * oi.quantity
+          }))
+        }));
+      } catch (err) {
+        console.error("Failed to fetch orders:", err);
+      }
+    }
+
+    async function refreshAdmin() {
+      await fetchLiveOrders();
+      // Stats
+      const totalRev = orders.reduce((a, b) => a + b.total, 0);
+      const pending = orders.filter(o => o.status === 'Pending').length;
+      document.getElementById('statOrders').textContent = orders.length;
+      document.getElementById('statRevenue').textContent = '₹' + totalRev;
+      document.getElementById('statItems').textContent = menuItems.length;
+      document.getElementById('statPending').textContent = pending;
+
+      // Overview orders table
+      renderAdminOrdersTable('overviewOrders', true);
+
+      // Full orders
+      renderAdminOrdersTable('ordersTable', false);
+
+      // Menu table
+      let mhtml = '';
+      menuItems.forEach(item => {
+        mhtml += `<tr>
+      <td style="color:var(--cream);font-weight:500">${item.name}</td>
+      <td style="text-transform:capitalize">${item.category}</td>
+      <td style="color:var(--amber);font-weight:700">₹${item.price}</td>
+      <td><span class="card-badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nonveg'}" style="padding:3px 8px;font-size:0.68rem">${item.type}</span></td>
+      <td>
+        <button class="action-btn btn-edit" onclick="editItem(${item.id})">✏ Edit</button>
+        <button class="action-btn btn-delete" onclick="deleteItem(${item.id})">🗑 Delete</button>
+      </td>
+    </tr>`;
+      });
+      document.getElementById('adminMenuBody').innerHTML = mhtml;
+
+      // Billing
+      document.getElementById('billTotal').textContent = '₹' + totalRev;
+      document.getElementById('billCount').textContent = orders.length;
+      let shtml = '';
+      orders.forEach(o => {
+        shtml += `<div class="sale-row">
+      <span class="sale-id">#${o.id}</span>
+      <div class="sale-info"><div class="sale-name">${o.items.map(i => i.name).join(', ').substring(0, 40)}…</div><div class="sale-table">📍 ${o.table} • ${o.time}</div></div>
+      <span class="sale-amount">₹${o.total}</span>
+      <button class="gen-invoice-btn" onclick="showBill(orders.find(x=>x.id==${o.id}))">🧾 Invoice</button>
+    </div>`;
+      });
+      document.getElementById('salesList').innerHTML = shtml || '<p style="color:var(--text-dim);text-align:center;padding:32px">No sales records yet.</p>';
+    }
+
+    function renderAdminOrdersTable(containerId, limit) {
+      const list = limit ? orders.slice(-5).reverse() : [...orders].reverse();
+      if (!list.length) {
+        document.getElementById(containerId).innerHTML = '<p style="color:var(--text-dim);padding:24px 0">No orders yet.</p>';
+        return;
+      }
+      const statuses = ['Pending', 'Preparing', 'Ready', 'Delivered'];
+      let html = `<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Order ID</th><th>Table</th><th>Items</th><th>Total</th><th>Time</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+      list.forEach(o => {
+        const sClass = { Pending: 's-pending', Preparing: 's-preparing', Ready: 's-ready', Delivered: 's-delivered' }[o.status];
+        html += `<tr>
+      <td style="color:var(--amber);font-weight:700">#${o.id}</td>
+      <td>${o.table}</td>
+      <td style="max-width:250px;white-space:normal;line-height:1.4;color:var(--cream)">${o.items.map(i => i.name + ' × ' + i.qty).join(', ')}</td>
+      <td style="color:var(--amber);font-weight:700">₹${o.total}</td>
+      <td>${o.time}</td>
+      <td><span class="status-badge ${sClass}">${o.status}</span></td>
+      <td><select class="table-select" style="padding:5px 10px;font-size:0.78rem;margin:0;min-width:120px" onchange="updateOrderStatus(${o.id},this.value)">
+        ${statuses.map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
+      </select></td>
+    </tr>`;
+      });
+      html += '</tbody></table></div>';
+      document.getElementById(containerId).innerHTML = html;
+    }
+
+    async function updateOrderStatus(id, status) {
+      try {
+        const { error } = await supabaseClient
+          .from('orders')
+          .update({ status: status })
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        // Re-fetch and re-render admin
+        await refreshAdmin(); 
+        showToast('Order #' + id + ' → ' + status); 
+      } catch (err) {
+        console.error("Failed to update status:", err);
+        showToast('❌ Failed to update status');
+      }
+    }
+
+    function editItem(id) {
+      const item = menuItems.find(i => i.id === id);
+      if (!item) return;
+      switchAdmin('add-item', document.querySelector('[onclick*="add-item"]'));
+      document.getElementById('addItemTitle').textContent = 'Edit Item';
+      document.getElementById('editItemId').value = id;
+      document.getElementById('fName').value = item.name;
+      document.getElementById('fCategory').value = item.category;
+      document.getElementById('fType').value = item.type;
+      document.getElementById('fPrice').value = item.price;
+      document.getElementById('fImg').value = item.img;
+      document.getElementById('fDesc').value = item.desc;
+    }
+
+    async function saveMenuItem(e) {
+      e.preventDefault();
+      const editId = parseInt(document.getElementById('editItemId').value);
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving…'; }
+
+      const payload = {
+        name: document.getElementById('fName').value.trim(),
+        category: document.getElementById('fCategory').value,
+        type: document.getElementById('fType').value,
+        price: parseFloat(document.getElementById('fPrice').value),
+        image_url: document.getElementById('fImg').value.trim(),
+        description: document.getElementById('fDesc').value.trim(),
+        is_available: true,
+      };
+
+      if (!editId) {
+        const maxId = menuItems.length > 0 ? Math.max(...menuItems.map(i => i.id)) : 0;
+        payload.id = maxId + 1;
+      }
+
+      try {
+        if (editId) {
+          // UPDATE existing item in Supabase
+          const { data: updated, error } = await supabaseClient
+            .from('menu_items')
+            .update(payload)
+            .eq('id', editId)
+            .select()
+            .single();
+          if (error) throw error;
+          const idx = menuItems.findIndex(i => i.id === editId);
+          if (idx !== -1) menuItems[idx] = dbRowToItem(updated);
+          showToast('✅ Item updated!');
+        } else {
+          // INSERT new item into Supabase
+          const { data: inserted, error } = await supabaseClient
+            .from('menu_items')
+            .insert([payload])
+            .select()
+            .single();
+          if (error) throw error;
+          menuItems.push(dbRowToItem(inserted));
+          showToast('✅ Item added to menu!');
+        }
+        document.getElementById('editItemId').value = '';
+        document.getElementById('addItemTitle').textContent = 'Add New Item';
+        e.target.reset();
+        refreshAdmin();
+      } catch (err) {
+        console.error('saveMenuItem error:', err);
+        showToast('❌ Error: ' + err.message);
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '💾 Save Item'; }
+      }
+    }
+
+    async function deleteItem(id) {
+      if (!confirm('Delete this item? This cannot be undone.')) return;
+      try {
+        const { error } = await supabaseClient
+          .from('menu_items')
+          .delete()
+          .eq('id', id);
+        if (error) throw error;
+        menuItems = menuItems.filter(i => i.id !== id);
+        refreshAdmin();
+        showToast('🗑 Item deleted!');
+      } catch (err) {
+        console.error('deleteItem error:', err);
+        showToast('❌ Could not delete: ' + err.message);
+      }
+    }
+
+    // ══════════════════════════════════════════════
+    //  SCROLL ANIMATIONS
+    // ══════════════════════════════════════════════
+    function initReveal() {
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            en.target.classList.add('visible');
+            obs.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .food-card').forEach(el => {
+        obs.observe(el);
+      });
+    }
+
+    // Navbar scroll shadow
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // ══════════════════════════════════════════════
+    //  TOAST
+    // ══════════════════════════════════════════════
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    // ══════════════════════════════════════════════
+    //  HERO SLIDER (global scope for onclick access)
+    // ══════════════════════════════════════════════
+    let _slideTick = 0;
+    let _heroAutoTimer = null;
+
+    function applySlide(tick, useTransition = true) {
+      const innerSlider = document.getElementById('heroSlider');
+      const masterSlider = document.getElementById('masterCarousel');
+      if (!innerSlider || !masterSlider) return;
+
+      masterSlider.style.transition = useTransition ? 'transform 0.8s ease-in-out' : 'none';
+      innerSlider.style.transition = useTransition ? 'transform 0.8s ease-in-out' : 'none';
+
+      if (tick <= 2) {
+        masterSlider.style.transform = 'translateX(0%)';
+        innerSlider.style.transform = `translateX(-${tick * 100}%)`;
+      } else if (tick === 3) {
+        innerSlider.style.transform = 'translateX(0%)';
+        masterSlider.style.transform = 'translateX(-100%)';
+      } else if (tick === 4) {
+        masterSlider.style.transform = 'translateX(-200%)';
+      } else if (tick === 5) {
+        masterSlider.style.transform = 'translateX(-300%)';
+        // Snap back to 0 after animation finishes
+        if (useTransition) {
+          setTimeout(() => {
+            if (_slideTick === 5) {
+              _slideTick = 0;
+              applySlide(0, false);
+            }
+          }, 800);
+        }
+      }
+    }
+
+    function heroAdvance() {
+      _slideTick++;
+      if (_slideTick > 5) {
+        _slideTick = 1;
+        applySlide(0, false);
+        void document.getElementById('masterCarousel').offsetWidth;
+      }
+      applySlide(_slideTick);
+    }
+
+    function heroSlideNav(dir) {
+      clearInterval(_heroAutoTimer);
+      
+      if (dir === -1 && _slideTick === 0) {
+        // Instantly jump to clone (5) then animate to 4
+        _slideTick = 5;
+        applySlide(5, false);
+        void document.getElementById('masterCarousel').offsetWidth;
+        _slideTick = 4;
+      } else if (dir === 1 && _slideTick === 5) {
+        _slideTick = 0;
+        applySlide(0, false);
+        void document.getElementById('masterCarousel').offsetWidth;
+        _slideTick = 1;
+      } else {
+        _slideTick += dir;
+        if (_slideTick < 0) _slideTick = 0;
+        if (_slideTick > 5) _slideTick = 5;
+      }
+      
+      applySlide(_slideTick);
+      
+      _heroAutoTimer = setInterval(() => {
+        if (window.location.hash.replace('#', '') === 'home' || !window.location.hash) {
+          heroAdvance();
+        }
+      }, 4000);
+    }
+
+    // ══════════════════════════════════════════════
+    // Load menu items from Supabase, fallback to hardcoded list
+    async function loadMenuFromDB() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('menu_items')
+          .select('*')
+          .eq('is_available', true)
+          .order('created_at', { ascending: true });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          menuItems = data.map(dbRowToItem);
+        } else {
+          // DB is empty — use fallback so menu isn't blank
+          menuItems = FALLBACK_MENU;
+        }
+      } catch (err) {
+        console.warn('Could not load menu from DB, using fallback:', err.message);
+        menuItems = FALLBACK_MENU;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Load menu items from Supabase first
+      await loadMenuFromDB();
+
+      const initPage = window.location.hash.replace('#', '') || 'home';
+      showPage(initPage, false);
+      initReveal();
+      updateFavBadge(); // restore badge from localStorage
+
+      // 2. Check if user is already logged in
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          const { data: userData, error } = await supabaseClient
+            .from('users')
+            .select('name, role')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (userData && userData.name) {
+            document.getElementById('navLoginBtn').innerHTML = `👤 ${userData.name.split(' ')[0]}`;
+            if (userData.role === 'Admin') {
+              document.getElementById('navAdminBtn').style.display = 'inline-flex';
+            }
+          } else {
+            document.getElementById('navLoginBtn').innerHTML = `👤 User`;
+          }
+        }
+      } catch (err) {
+        console.error("Session restore error:", err);
+      }
+
+      // 3. Start hero slider auto-advance
+      _heroAutoTimer = setInterval(() => {
+        if (window.location.hash.replace('#', '') === 'home' || !window.location.hash) {
+          heroAdvance();
+        }
+      }, 4000);
+    });
+  </script>
+</body>
+
+</html>
