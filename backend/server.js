@@ -4,8 +4,26 @@ const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['https://YOUR_NETLIFY_SITE.netlify.app']; // replace later
-app.use(cors({ origin: allowedOrigins }));
+
+// Allow requests from Netlify, Railway, localhost, and any ALLOWED_ORIGINS env var
+const extraOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : [];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g. mobile apps, Postman, curl)
+    if (!origin) return callback(null, true);
+    // Allow localhost for local dev
+    if (origin.startsWith('http://localhost') || origin.startsWith('https://localhost')) return callback(null, true);
+    // Allow any Netlify subdomain
+    if (origin.endsWith('.netlify.app') || origin === 'https://app.netlify.com') return callback(null, true);
+    // Allow any Railway subdomain
+    if (origin.endsWith('.railway.app')) return callback(null, true);
+    // Allow any explicitly listed origins
+    if (extraOrigins.includes(origin)) return callback(null, true);
+    // Block everything else
+    callback(new Error('CORS: origin ' + origin + ' not allowed'));
+  },
+  credentials: true
+}));
 
 app.use(express.json());
 
