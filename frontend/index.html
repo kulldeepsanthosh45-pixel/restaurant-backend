@@ -579,7 +579,7 @@
   <div class="modal-overlay" id="billModal">
     <div class="bill-modal">
       <div class="bill-header">
-        <h2>SpiceCraft</h2>
+        <h2>Everdine Restaurant</h2>
         <p id="billTableInfo">Table / Takeaway</p>
         <p id="billDateTime" style="font-size:0.78rem;color:var(--text-dim);margin-top:4px"></p>
       </div>
@@ -590,8 +590,8 @@
       <div class="bill-row"><span>GST (5%)</span><span id="billGst"></span></div>
       <div class="bill-row total-row"><span>Total Amount</span><span id="billGrand"></span></div>
       <div class="bill-actions">
-        <button class="bill-close-btn" onclick="closeBill()">Close</button>
-        <button class="bill-print-btn" onclick="window.print()">🖨 Print Bill</button>
+        <button class="bill-close-btn" onclick="closeBill()">✕ Close</button>
+        <button class="bill-print-btn" onclick="closeBill(); showToast('Thank you for dining with us! 🍽️')" style="background: var(--amber);">✅ Done</button>
       </div>
     </div>
   </div>
