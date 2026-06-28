@@ -1375,7 +1375,7 @@
       const totalRev = orders.reduce((a, b) => a + b.total, 0);
       const pending = orders.filter(o => o.status === 'Pending').length;
       document.getElementById('statOrders').textContent = orders.length;
-      document.getElementById('statRevenue').textContent = '₹' + totalRev;
+      document.getElementById('statRevenue').textContent = '₹' + totalRev.toFixed(2);
       document.getElementById('statItems').textContent = menuItems.length;
       document.getElementById('statPending').textContent = pending;
 
@@ -1402,14 +1402,14 @@
       document.getElementById('adminMenuBody').innerHTML = mhtml;
 
       // Billing
-      document.getElementById('billTotal').textContent = '₹' + totalRev;
+      document.getElementById('billTotal').textContent = '₹' + totalRev.toFixed(2);
       document.getElementById('billCount').textContent = orders.length;
       let shtml = '';
       orders.forEach(o => {
         shtml += `<div class="sale-row">
       <span class="sale-id">#${o.id}</span>
       <div class="sale-info"><div class="sale-name">${o.items.map(i => i.name).join(', ').substring(0, 40)}…</div><div class="sale-table">📍 ${o.table} • ${o.time}</div></div>
-      <span class="sale-amount">₹${o.total}</span>
+      <span class="sale-amount">₹${parseFloat(o.total).toFixed(2)}</span>
       <button class="gen-invoice-btn" onclick="showBill(orders.find(x=>x.id==${o.id}))">🧾 Invoice</button>
     </div>`;
       });
@@ -1430,7 +1430,7 @@
       <td style="color:var(--amber);font-weight:700">#${o.id}</td>
       <td>${o.table}</td>
       <td style="max-width:250px;white-space:normal;line-height:1.4;color:var(--cream)">${o.items.map(i => i.name + ' × ' + i.qty).join(', ')}</td>
-      <td style="color:var(--amber);font-weight:700">₹${o.total}</td>
+      <td style="color:var(--amber);font-weight:700">₹${parseFloat(o.total).toFixed(2)}</td>
       <td>${o.time}</td>
       <td><span class="status-badge ${sClass}">${o.status}</span></td>
       <td><select class="table-select" style="padding:5px 10px;font-size:0.78rem;margin:0;min-width:120px" onchange="updateOrderStatus(${o.id},this.value)">
