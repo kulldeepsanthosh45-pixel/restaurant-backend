@@ -336,6 +336,21 @@
     </div>
   </div>
 
+  <!-- ─── UPI PAYMENT MODAL ─── -->
+  <div id="upiModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;">
+    <div style="background:#1a1a2e;border:1px solid #e8a020;border-radius:20px;padding:32px 24px;max-width:360px;width:90%;text-align:center;position:relative;">
+      <button onclick="document.getElementById('upiModal').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;">✕</button>
+      <h3 style="color:#e8a020;margin:0 0 4px;font-size:1.2rem;">📱 Scan & Pay via UPI</h3>
+      <p style="color:#aaa;font-size:0.85rem;margin:0 0 16px;">Scan the QR code with any UPI app</p>
+      <img src="upi-qr.jpeg" alt="UPI QR Code" style="width:220px;height:220px;object-fit:contain;border-radius:12px;border:2px solid #e8a020;">
+      <p style="color:#fff;margin:12px 0 4px;font-size:1rem;font-weight:700;">₹<span id="upiAmount">0</span></p>
+      <p style="color:#aaa;font-size:0.82rem;margin:0 0 4px;">UPI ID: <strong style="color:#e8a020;">7397359814@fam</strong></p>
+      <p style="color:#aaa;font-size:0.78rem;margin:0 0 16px;">Name: KULLDEEP SANTHOSH S</p>
+      <p style="color:#ccc;font-size:0.8rem;margin:0 0 16px;">After paying, click the button below to confirm your order.</p>
+      <button id="upiConfirmBtn" onclick="confirmUpiPayment()" style="background:linear-gradient(135deg,#e8a020,#f5c842);color:#000;border:none;border-radius:10px;padding:12px 32px;font-size:1rem;font-weight:700;cursor:pointer;width:100%;">✅ I Have Paid</button>
+    </div>
+  </div>
+
   <!-- ─── LOGIN PAGE ─── -->
   <div class="page" id="page-login">
     <div class="login-container">
@@ -688,7 +703,7 @@
 
     let menuItems = []; // Populated from Supabase on load
 
-    let cart = {};       // { itemId: qty }
+    let cart = JSON.parse(localStorage.getItem('everdine_cart') || '{}');  // { itemId: qty } – persisted
     let orders = JSON.parse(localStorage.getItem('everdine_orders')) || [];     // placed orders
     let nextOrderId = parseInt(localStorage.getItem('everdine_nextOrderId')) || 1001;
     // Favourites – persisted in localStorage as array of item ids
@@ -999,9 +1014,12 @@
     // ══════════════════════════════════════════════
     //  CART LOGIC
     // ══════════════════════════════════════════════
+    function saveCart() { localStorage.setItem('everdine_cart', JSON.stringify(cart)); }
+
     function addToCart(id, e) {
       e && e.stopPropagation();
       cart[id] = (cart[id] || 0) + 1;
+      saveCart();
       updateCartUI(); refreshCards();
       showToast('Added to cart! 🛒');
     }
@@ -1010,6 +1028,7 @@
       e && e.stopPropagation();
       cart[id] = (cart[id] || 0) + delta;
       if (cart[id] <= 0) delete cart[id];
+      saveCart();
       updateCartUI(); refreshCards();
     }
 
@@ -1184,6 +1203,9 @@
     // ══════════════════════════════════════════════
     //  ORDER PLACEMENT
     // ══════════════════════════════════════════════
+    // Holds pending online order until customer confirms UPI payment
+    let _pendingOnlineOrder = null;
+
     async function placeOrder(paymentMethod) {
       const table = document.getElementById('tableSelect').value;
       if (!table) { showToast('⚠ Please select a table or takeaway!'); return; }
@@ -1210,72 +1232,46 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const customer_id = session ? session.user.id : null;
 
-        // Call backend API
-        const response = await fetch('https://restaurant-backend-production-ecec.up.railway.app/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            customer_id,
-            table_no: table,
-            items: items,
-            payment_method: paymentMethod
-          })
-        });
+        if (paymentMethod === 'Online') {
+          // ── Save order directly to Supabase (bypasses Railway backend) ──
+          const { data: orderRow, error: orderErr } = await supabaseClient
+            .from('orders')
+            .insert([{ customer_id, table_no: table, total_amount: total, payment_method: 'Online', status: 'Pending' }])
+            .select().single();
+          if (orderErr) throw orderErr;
 
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to place order');
+          const orderItemsPayload = items.map(i => ({
+            order_id: orderRow.id, menu_item_id: i.menu_item_id,
+            quantity: i.quantity, price: i.price
+          }));
+          const { error: itemsErr } = await supabaseClient.from('order_items').insert(orderItemsPayload);
+          if (itemsErr) throw itemsErr;
 
-        const orderId = data.order.id;
-        const finalOrder = {
-          id: orderId, table, items: items.map(i => ({ ...i, qty: i.quantity })), subtotal, gst, total,
-          status: 'Pending', time: new Date().toLocaleTimeString()
-        };
-
-        if (paymentMethod === 'Online' && data.razorpay_order) {
-          // Initialize Razorpay Checkout
-          const options = {
-            key: data.key_id,
-            amount: data.razorpay_order.amount,
-            currency: "INR",
-            name: "Everdine Restaurant",
-            description: "Order #" + orderId,
-            order_id: data.razorpay_order.id,
-            handler: async function (response) {
-              // Verify Payment
-              try {
-                const verifyRes = await fetch('https://restaurant-backend-production-ecec.up.railway.app/api/payment/verify', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    order_id: orderId,
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_signature: response.razorpay_signature
-                  })
-                });
-                const verifyData = await verifyRes.json();
-                if (!verifyRes.ok) throw new Error(verifyData.message || 'Verification failed');
-
-                showToast('✅ Payment Successful!');
-                finishOrderUI(finalOrder);
-              } catch (err) {
-                showToast('❌ Payment verification failed: ' + err.message);
-              }
-            },
-            prefill: {
-              name: session ? (session.user.user_metadata?.name || "Guest") : "Guest",
-              contact: "9999999999"
-            },
-            theme: { color: "#e8a020" }
+          const finalOrder = {
+            id: orderRow.id, table, items: items.map(i => ({ ...i, qty: i.quantity })), subtotal, gst, total,
+            status: 'Pending', time: new Date().toLocaleTimeString()
           };
-          const rzp = new window.Razorpay(options);
-          rzp.on('payment.failed', function (response) {
-            showToast('❌ Payment Failed');
-          });
-          rzp.open();
+          _pendingOnlineOrder = finalOrder;
+
+          // Show UPI QR modal
+          document.getElementById('upiAmount').textContent = total;
+          document.getElementById('upiModal').style.display = 'flex';
+
         } else {
-          // Cash payment - finish immediately
-          showToast('🎉 Order #' + orderId + ' placed successfully!');
+          // ── Cash payment: call backend as before ──
+          const response = await fetch('https://restaurant-backend-production-ecec.up.railway.app/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ customer_id, table_no: table, items, payment_method: 'Cash' })
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Failed to place order');
+
+          const finalOrder = {
+            id: data.order.id, table, items: items.map(i => ({ ...i, qty: i.quantity })), subtotal, gst, total,
+            status: 'Pending', time: new Date().toLocaleTimeString()
+          };
+          showToast('🎉 Order #' + data.order.id + ' placed successfully!');
           finishOrderUI(finalOrder);
         }
 
@@ -1288,9 +1284,20 @@
       }
     }
 
+    async function confirmUpiPayment() {
+      document.getElementById('upiModal').style.display = 'none';
+      if (!_pendingOnlineOrder) return;
+      // Mark order as Paid in Supabase
+      await supabaseClient.from('orders').update({ status: 'Paid', payment_method: 'Online' }).eq('id', _pendingOnlineOrder.id);
+      showToast('✅ Payment confirmed! Order #' + _pendingOnlineOrder.id + ' placed.');
+      finishOrderUI(_pendingOnlineOrder);
+      _pendingOnlineOrder = null;
+    }
+
     function finishOrderUI(finalOrder) {
       showBill(finalOrder);
       cart = {};
+      saveCart(); // Clear persisted cart after order placed
       refreshCards();
       updateCartUI();
       document.getElementById('cartSidebar').classList.remove('open');
