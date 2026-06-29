@@ -417,7 +417,10 @@
 
         <!-- Overview -->
         <div class="admin-section active" id="admin-overview">
-          <h2 class="admin-title">Dashboard Overview</h2>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+            <h2 class="admin-title" style="margin:0">Dashboard Overview</h2>
+            <button onclick="resetAdminData()" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">🗑 Reset All Data</button>
+          </div>
           <div class="stats-grid">
             <div class="stat-card reveal">
               <div class="stat-icon">📦</div>
@@ -440,7 +443,7 @@
               <div class="stat-label">Pending Orders</div>
             </div>
           </div>
-          <h3 class="section-title" style="font-size:1.1rem;margin-bottom:16px">Recent Orders</h3>
+          <h3 class="section-title" style="font-size:1.1rem;margin-bottom:16px">All Orders</h3>
           <div id="overviewOrders"></div>
         </div>
 
@@ -1233,25 +1236,8 @@
         const customer_id = session ? session.user.id : null;
 
         if (paymentMethod === 'Online') {
-          // ── Save order directly to Supabase (bypasses Railway backend) ──
-          const { data: orderRow, error: orderErr } = await supabaseClient
-            .from('orders')
-            .insert([{ customer_id, table_no: table, total_amount: total, payment_method: 'Online', status: 'Pending' }])
-            .select().single();
-          if (orderErr) throw orderErr;
-
-          const orderItemsPayload = items.map(i => ({
-            order_id: orderRow.id, menu_item_id: i.menu_item_id,
-            quantity: i.quantity, price: i.price
-          }));
-          const { error: itemsErr } = await supabaseClient.from('order_items').insert(orderItemsPayload);
-          if (itemsErr) throw itemsErr;
-
-          const finalOrder = {
-            id: orderRow.id, table, items: items.map(i => ({ ...i, qty: i.quantity })), subtotal, gst, total,
-            status: 'Pending', time: new Date().toLocaleTimeString()
-          };
-          _pendingOnlineOrder = finalOrder;
+          // ── Store order data in memory, save to DB only AFTER payment confirmed ──
+          _pendingOnlineOrder = { customer_id, table, items, subtotal, gst, total, time: new Date().toLocaleTimeString() };
 
           // Show UPI QR modal
           document.getElementById('upiAmount').textContent = total;
@@ -1287,11 +1273,45 @@
     async function confirmUpiPayment() {
       document.getElementById('upiModal').style.display = 'none';
       if (!_pendingOnlineOrder) return;
-      // Mark order as Paid in Supabase
-      await supabaseClient.from('orders').update({ status: 'Paid', payment_method: 'Online' }).eq('id', _pendingOnlineOrder.id);
-      showToast('✅ Payment confirmed! Order #' + _pendingOnlineOrder.id + ' placed.');
-      finishOrderUI(_pendingOnlineOrder);
+      const { customer_id, table, items, subtotal, gst, total, time } = _pendingOnlineOrder;
+      try {
+        // NOW insert order into Supabase after payment is confirmed
+        const { data: orderRow, error: orderErr } = await supabaseClient
+          .from('orders')
+          .insert([{ customer_id, table_no: table, total_amount: total, payment_method: 'Online', status: 'Paid' }])
+          .select().single();
+        if (orderErr) throw orderErr;
+
+        const orderItemsPayload = items.map(i => ({
+          order_id: orderRow.id, menu_item_id: i.menu_item_id,
+          quantity: i.quantity, price: i.price
+        }));
+        await supabaseClient.from('order_items').insert(orderItemsPayload);
+
+        const finalOrder = {
+          id: orderRow.id, table, items: items.map(i => ({ ...i, qty: i.quantity })), subtotal, gst, total,
+          status: 'Paid', time
+        };
+        showToast('✅ Payment confirmed! Order #' + orderRow.id + ' placed.');
+        finishOrderUI(finalOrder);
+      } catch (err) {
+        showToast('❌ Failed to save order: ' + err.message);
+      }
       _pendingOnlineOrder = null;
+    }
+
+    async function resetAdminData() {
+      if (!confirm('⚠️ This will permanently delete ALL orders from the database. Are you sure?')) return;
+      try {
+        // Delete all order items first, then orders
+        await supabaseClient.from('order_items').delete().neq('id', 0);
+        await supabaseClient.from('orders').delete().neq('id', 0);
+        orders = [];
+        showToast('✅ All orders have been reset!');
+        refreshAdmin();
+      } catch (err) {
+        showToast('❌ Reset failed: ' + err.message);
+      }
     }
 
     function finishOrderUI(finalOrder) {
@@ -1429,7 +1449,7 @@
     }
 
     function renderAdminOrdersTable(containerId, limit) {
-      const list = limit ? orders.slice(-5).reverse() : [...orders].reverse();
+      const list = [...orders].reverse(); // Always show all orders
       if (!list.length) {
         document.getElementById(containerId).innerHTML = '<p style="color:var(--text-dim);padding:24px 0">No orders yet.</p>';
         return;
