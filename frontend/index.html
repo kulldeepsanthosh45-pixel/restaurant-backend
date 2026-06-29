@@ -712,11 +712,12 @@
     // Favourites – persisted in localStorage as array of item ids
     let favourites = new Set(JSON.parse(localStorage.getItem('everdine_favs') || '[]'));
 
-    let reviews = [
+    const _defaultReviews = [
       { name: "Aarav S.", stars: 5, text: "The Butter Chicken here is absolutely phenomenal. Best I've had in the city!" },
       { name: "Priya M.", stars: 4, text: "Great ambiance and excellent service. The starters were top-notch." },
       { name: "Rohan D.", stars: 5, text: "A truly grand dining experience. The Chocolate Lava Cake is a must-try!" }
     ];
+    let reviews = JSON.parse(localStorage.getItem('everdine_reviews') || 'null') || _defaultReviews;
     let selectedRating = 0;
 
     // ══════════════════════════════════════════════
@@ -900,6 +901,7 @@
 
       reviews.unshift(newReview);
       if (reviews.length > MAX_REVIEWS) reviews.pop();
+      localStorage.setItem('everdine_reviews', JSON.stringify(reviews)); // persist
 
       // Animate the new card onto the stack
       addReviewCard(newReview);
