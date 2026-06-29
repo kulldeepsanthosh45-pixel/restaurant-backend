@@ -42,6 +42,10 @@
       </button>
       <button class="admin-btn" onclick="showPage('login')" id="navLoginBtn">👤 Login</button>
       <button class="admin-btn" onclick="showPage('admin')" id="navAdminBtn" style="display: none;">⚙ Admin</button>
+      <button class="admin-btn" onclick="handleLogout()" id="navLogoutBtn" style="display: none; background: rgba(192, 57, 43, 0.15); color: #ff7675; border-color: rgba(192, 57, 43, 0.3);">
+        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 4px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        Logout
+      </button>
     </div>
   </nav>
 
@@ -1032,11 +1036,13 @@
 
           if (userData) {
             document.getElementById('navLoginBtn').innerHTML = `👤 ${userData.name.split(' ')[0]}`;
+            document.getElementById('navLogoutBtn').style.display = 'inline-flex';
             if (userData.role === 'Admin') {
               document.getElementById('navAdminBtn').style.display = 'inline-flex';
             }
           } else {
             document.getElementById('navLoginBtn').innerHTML = `👤 User`;
+            document.getElementById('navLogoutBtn').style.display = 'inline-flex';
           }
 
           showToast(`Welcome back! You have successfully logged in. 🎉`);
@@ -1052,6 +1058,19 @@
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = currentAuthMode === 'signup' ? 'Sign Up' : 'Login';
+    }
+
+    async function handleLogout() {
+      try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        document.getElementById('navLoginBtn').innerHTML = `👤 Login`;
+        document.getElementById('navAdminBtn').style.display = 'none';
+        document.getElementById('navLogoutBtn').style.display = 'none';
+        showToast('👋 Logged out successfully!');
+        showPage('home');
+      } catch (err) {
+        showToast('❌ Logout failed: ' + err.message);
       }
     }
 
@@ -1825,11 +1844,13 @@
 
           if (userData && userData.name) {
             document.getElementById('navLoginBtn').innerHTML = `👤 ${userData.name.split(' ')[0]}`;
+            document.getElementById('navLogoutBtn').style.display = 'inline-flex';
             if (userData.role === 'Admin') {
               document.getElementById('navAdminBtn').style.display = 'inline-flex';
             }
           } else {
             document.getElementById('navLoginBtn').innerHTML = `👤 User`;
+            document.getElementById('navLogoutBtn').style.display = 'inline-flex';
           }
         }
       } catch (err) {
