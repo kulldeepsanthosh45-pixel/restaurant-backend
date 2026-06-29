@@ -19,6 +19,7 @@ CREATE TABLE public.menu_items (
   type TEXT NOT NULL CHECK (type IN ('veg', 'nonveg')) DEFAULT 'veg',
   image_url TEXT,
   is_available BOOLEAN DEFAULT TRUE,
+  is_popular BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
 

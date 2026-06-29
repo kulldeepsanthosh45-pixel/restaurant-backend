@@ -1357,7 +1357,7 @@
           total: parseFloat(o.total_amount),
           status: o.status,
           time: new Date(o.created_at).toLocaleTimeString(),
-          items: o.order_items.map(oi => ({
+          items: (o.order_items || []).map(oi => ({
             name: oi.menu_items ? oi.menu_items.name : 'Unknown Item',
             qty: oi.quantity,
             price: parseFloat(oi.price),
@@ -1370,50 +1370,55 @@
     }
 
     async function refreshAdmin() {
-      await fetchLiveOrders();
-      // Stats
-      const totalRev = orders.reduce((a, b) => a + b.total, 0);
-      const pending = orders.filter(o => o.status === 'Pending').length;
-      document.getElementById('statOrders').textContent = orders.length;
-      document.getElementById('statRevenue').textContent = '₹' + totalRev.toFixed(2);
-      document.getElementById('statItems').textContent = menuItems.length;
-      document.getElementById('statPending').textContent = pending;
+      try {
+        await fetchLiveOrders();
+        // Stats
+        const totalRev = orders.reduce((a, b) => a + (b.total || 0), 0);
+        const pending = orders.filter(o => o.status === 'Pending').length;
+        document.getElementById('statOrders').textContent = orders.length;
+        document.getElementById('statRevenue').textContent = '₹' + totalRev.toFixed(2);
+        document.getElementById('statItems').textContent = menuItems.length;
+        document.getElementById('statPending').textContent = pending;
 
-      // Overview orders table
-      renderAdminOrdersTable('overviewOrders', true);
+        // Overview orders table
+        renderAdminOrdersTable('overviewOrders', true);
 
-      // Full orders
-      renderAdminOrdersTable('ordersTable', false);
+        // Full orders
+        renderAdminOrdersTable('ordersTable', false);
 
-      // Menu table
-      let mhtml = '';
-      menuItems.forEach(item => {
-        mhtml += `<tr>
-      <td style="color:var(--cream);font-weight:500">${item.name}</td>
-      <td style="text-transform:capitalize">${item.category}</td>
-      <td style="color:var(--amber);font-weight:700">₹${item.price}</td>
-      <td><span class="card-badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nonveg'}" style="padding:3px 8px;font-size:0.68rem">${item.type}</span></td>
-      <td>
-        <button class="action-btn btn-edit" onclick="editItem(${item.id})">✏ Edit</button>
-        <button class="action-btn btn-delete" onclick="deleteItem(${item.id})">🗑 Delete</button>
-      </td>
-    </tr>`;
-      });
-      document.getElementById('adminMenuBody').innerHTML = mhtml;
+        // Menu table
+        let mhtml = '';
+        menuItems.forEach(item => {
+          mhtml += `<tr>
+        <td style="color:var(--cream);font-weight:500">${item.name}</td>
+        <td style="text-transform:capitalize">${item.category}</td>
+        <td style="color:var(--amber);font-weight:700">₹${item.price}</td>
+        <td><span class="card-badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nonveg'}" style="padding:3px 8px;font-size:0.68rem">${item.type}</span></td>
+        <td>
+          <button class="action-btn btn-edit" onclick="editItem(${item.id})">✏ Edit</button>
+          <button class="action-btn btn-delete" onclick="deleteItem(${item.id})">🗑 Delete</button>
+        </td>
+      </tr>`;
+        });
+        document.getElementById('adminMenuBody').innerHTML = mhtml;
 
-      // Billing
-      document.getElementById('billTotal').textContent = '₹' + totalRev.toFixed(2);
-      document.getElementById('billCount').textContent = orders.length;
-      let shtml = '';
-      orders.forEach(o => {
-        shtml += `<div class="sale-row">
-      <span class="sale-id">#${o.id}</span>
-      <div class="sale-info"><div class="sale-name">${o.items.map(i => i.name).join(', ').substring(0, 40)}…</div><div class="sale-table">📍 ${o.table} • ${o.time}</div></div>
-      <span class="sale-amount">₹${parseFloat(o.total).toFixed(2)}</span>
-      <button class="gen-invoice-btn" onclick="showBill(orders.find(x=>x.id==${o.id}))">🧾 Invoice</button>
-    </div>`;
-      });
-      document.getElementById('salesList').innerHTML = shtml || '<p style="color:var(--text-dim);text-align:center;padding:32px">No sales records yet.</p>';
+        // Billing
+        document.getElementById('billTotal').textContent = '₹' + totalRev.toFixed(2);
+        document.getElementById('billCount').textContent = orders.length;
+        let shtml = '';
+        orders.forEach(o => {
+          shtml += `<div class="sale-row">
+        <span class="sale-id">#${o.id}</span>
+        <div class="sale-info"><div class="sale-name">${(o.items || []).map(i => i.name).join(', ').substring(0, 40)}…</div><div class="sale-table">📍 ${o.table} • ${o.time}</div></div>
+        <span class="sale-amount">₹${parseFloat(o.total || 0).toFixed(2)}</span>
+        <button class="gen-invoice-btn" onclick="showBill(orders.find(x=>x.id==${o.id}))">🧾 Invoice</button>
+      </div>`;
+        });
+        document.getElementById('salesList').innerHTML = shtml || '<p style="color:var(--text-dim);text-align:center;padding:32px">No sales records yet.</p>';
+      } catch (err) {
+        console.error("Error refreshing admin dashboard:", err);
+        showToast("❌ Error loading admin dashboard: " + err.message);
+      }
     }
 
     function renderAdminOrdersTable(containerId, limit) {
@@ -1429,7 +1434,7 @@
         html += `<tr>
       <td style="color:var(--amber);font-weight:700">#${o.id}</td>
       <td>${o.table}</td>
-      <td style="max-width:250px;white-space:normal;line-height:1.4;color:var(--cream)">${o.items.map(i => i.name + ' × ' + i.qty).join(', ')}</td>
+      <td style="max-width:250px;white-space:normal;line-height:1.4;color:var(--cream)">${(o.items || []).map(i => i.name + ' × ' + i.qty).join(', ')}</td>
       <td style="color:var(--amber);font-weight:700">₹${parseFloat(o.total).toFixed(2)}</td>
       <td>${o.time}</td>
       <td><span class="status-badge ${sClass}">${o.status}</span></td>
@@ -1446,10 +1451,10 @@
     function adminPrintBill(orderId) {
       const o = orders.find(x => x.id === orderId);
       if (!o) return;
-      const subtotal = o.items.reduce((s, i) => s + i.line, 0);
+      const subtotal = (o.items || []).reduce((s, i) => s + i.line, 0);
       const gst = Math.round(subtotal * 0.05);
       const total = subtotal + gst;
-      const itemsHtml = o.items.map(i =>
+      const itemsHtml = (o.items || []).map(i =>
         `<tr><td>${i.name}</td><td style="text-align:center">${i.qty}</td><td style="text-align:right">₹${i.line}</td></tr>`
       ).join('');
       const win = window.open('', '_blank', 'width=400,height=600');

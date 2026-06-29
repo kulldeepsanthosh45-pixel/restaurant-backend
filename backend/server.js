@@ -100,10 +100,10 @@ app.get('/api/menu', async (req, res) => {
 
 // Add menu item (Admin only logic normally, keeping it simple for now)
 app.post('/api/menu', async (req, res) => {
-  const { name, description, price, category, type, image_url, is_available } = req.body;
+  const { name, description, price, category, type, image_url, is_available, is_popular } = req.body;
   const { data, error } = await supabase
     .from('menu_items')
-    .insert([{ name, description, price, category, type, image_url, is_available }])
+    .insert([{ name, description, price, category, type, image_url, is_available, is_popular }])
     .select()
     .single();
 
