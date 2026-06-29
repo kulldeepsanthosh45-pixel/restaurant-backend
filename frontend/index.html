@@ -173,8 +173,10 @@
           from our valued diners</p>
       </div>
 
-      <div class="reviews-grid" id="reviewsGrid">
-        <!-- Reviews rendered here -->
+      <div class="reviews-stack-wrap">
+        <div class="reviews-stack" id="reviewsGrid">
+          <!-- Stacked review cards rendered here -->
+        </div>
       </div>
 
       <div class="review-form-wrap reveal">
@@ -200,46 +202,44 @@
     <!-- ─── CONTACT SECTION ─── -->
     <div class="contact-section">
       <div class="contact-header reveal">
-        <h2 class="section-title" style="text-align:center; margin-bottom:6px;">Get In <span>Touch</span></h2>
-        <p style="text-align:center; color:var(--text-muted); font-size:0.95rem; margin-bottom:40px;">We'd love to hear
+        <h2 class="section-title" style="text-align:center;margin-bottom:6px">Get In <span>Touch</span></h2>
+        <p style="text-align:center;color:var(--text-muted);font-size:0.95rem;margin-bottom:40px">We’d love to hear
           from you. Book a table or ask us anything.</p>
       </div>
-
-      <div class="contact-content"
-        style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; text-align: center;">
-        <div class="info-item" style="flex-direction: column; align-items: center; gap: 8px;">
+      <div class="contact-info-grid">
+        <div class="info-item contact-col">
           <span class="info-icon">📍</span>
           <div>
-            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Location</h4>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">123 Golden Avenue<br>Food City, FC 40001</p>
+            <h4 style="margin-bottom:4px;font-family:'Playfair Display',serif;color:var(--cream)">Location</h4>
+            <p style="color:var(--text-muted);font-size:0.95rem">123 Golden Avenue<br>Food City, FC 40001</p>
           </div>
         </div>
-        <div class="info-item" style="flex-direction: column; align-items: center; gap: 8px;">
+        <div class="info-item contact-col">
           <span class="info-icon">📞</span>
           <div>
-            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Phone</h4>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">+91 98765 43210</p>
+            <h4 style="margin-bottom:4px;font-family:'Playfair Display',serif;color:var(--cream)">Phone</h4>
+            <p style="color:var(--text-muted);font-size:0.95rem">+91 98765 43210</p>
           </div>
         </div>
-        <a href="mailto:hello@everdine.com" class="info-item" style="flex-direction: column; align-items: center; gap: 8px; text-decoration: none;">
+        <a href="mailto:hello@everdine.com" class="info-item contact-col" style="text-decoration:none">
           <span class="info-icon">📧</span>
           <div>
-            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Email</h4>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">hello@everdine.com</p>
+            <h4 style="margin-bottom:4px;font-family:'Playfair Display',serif;color:var(--cream)">Email</h4>
+            <p style="color:var(--text-muted);font-size:0.95rem">hello@everdine.com</p>
           </div>
         </a>
-        <a href="https://www.instagram.com/everdine_restaurant/?hl=en" target="_blank" class="info-item" style="flex-direction: column; align-items: center; gap: 8px; text-decoration: none;">
-          <span class="info-icon" style="display: flex; align-items: center; justify-content: center;"><img src="instagram.png" alt="Instagram" style="width: 24px; height: 24px;"></span>
+        <a href="https://www.instagram.com/everdine_restaurant/?hl=en" target="_blank" class="info-item contact-col" style="text-decoration:none">
+          <span class="info-icon" style="display:flex;align-items:center;justify-content:center"><img src="instagram.png" alt="Instagram" style="width:24px;height:24px"></span>
           <div>
-            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Instagram</h4>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">@everdine_restaurant</p>
+            <h4 style="margin-bottom:4px;font-family:'Playfair Display',serif;color:var(--cream)">Instagram</h4>
+            <p style="color:var(--text-muted);font-size:0.95rem">@everdine_restaurant</p>
           </div>
         </a>
-        <div class="info-item" style="flex-direction: column; align-items: center; gap: 8px;">
+        <div class="info-item contact-col">
           <span class="info-icon">⏰</span>
           <div>
-            <h4 style="margin-bottom: 4px; font-family: 'Playfair Display', serif; color: var(--cream);">Hours</h4>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">11:00 AM - 11:00 PM</p>
+            <h4 style="margin-bottom:4px;font-family:'Playfair Display',serif;color:var(--cream)">Hours</h4>
+            <p style="color:var(--text-muted);font-size:0.95rem">11:00 AM - 11:00 PM</p>
           </div>
         </div>
       </div>
@@ -817,27 +817,64 @@
     }
 
     // ══════════════════════════════════════════════
-    //  REVIEWS LOGIC
+    //  REVIEWS LOGIC  – stacked card animation
     // ══════════════════════════════════════════════
+    const MAX_REVIEWS = 5;
+
+    function buildReviewCard(r) {
+      const starsHtml = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+      const card = document.createElement('div');
+      card.className = 'review-card stack-card';
+      card.innerHTML = `
+        <div class="review-header">
+          <div class="review-avatar">${r.name.charAt(0)}</div>
+          <div>
+            <div class="review-name">${r.name}</div>
+            <div class="review-stars">${starsHtml}</div>
+          </div>
+        </div>
+        <div class="review-text">"${r.text}"</div>`;
+      return card;
+    }
+
     function renderReviews() {
       const grid = document.getElementById('reviewsGrid');
       if (!grid) return;
-
-      let html = '';
-      reviews.forEach(r => {
-        let starsHtml = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
-        html += `<div class="review-card reveal">
-          <div class="review-header">
-            <div class="review-avatar">${r.name.charAt(0)}</div>
-            <div>
-              <div class="review-name">${r.name}</div>
-              <div class="review-stars">${starsHtml}</div>
-            </div>
-          </div>
-          <div class="review-text">"${r.text}"</div>
-        </div>`;
+      grid.innerHTML = '';
+      reviews.forEach((r, idx) => {
+        const card = buildReviewCard(r);
+        // depth effect: cards behind are offset and darker
+        card.style.setProperty('--depth', idx);
+        grid.appendChild(card);
       });
-      grid.innerHTML = html;
+    }
+
+    function addReviewCard(r) {
+      const grid = document.getElementById('reviewsGrid');
+      if (!grid) return;
+
+      // If at max, animate last card out before removing it
+      const existingCards = grid.querySelectorAll('.stack-card');
+      if (existingCards.length >= MAX_REVIEWS) {
+        const last = existingCards[existingCards.length - 1];
+        last.classList.add('stack-exit');
+        setTimeout(() => last.remove(), 400);
+      }
+
+      // Add new card on top with enter animation
+      const card = buildReviewCard(r);
+      card.classList.add('stack-enter');
+      card.style.setProperty('--depth', 0);
+      grid.prepend(card);
+
+      // Update depth offsets for all cards
+      setTimeout(() => {
+        card.classList.remove('stack-enter');
+        card.classList.add('stack-top');
+        grid.querySelectorAll('.stack-card').forEach((c, idx) => {
+          c.style.setProperty('--depth', idx);
+        });
+      }, 50);
     }
 
     function pickStar(val) {
@@ -859,11 +896,13 @@
       }
       const name = document.getElementById('reviewName').value;
       const text = document.getElementById('reviewText').value;
+      const newReview = { name, stars: selectedRating, text };
 
-      reviews.unshift({ name, stars: selectedRating, text });
-      if (reviews.length > 6) reviews.pop(); // Keep only latest 6
+      reviews.unshift(newReview);
+      if (reviews.length > MAX_REVIEWS) reviews.pop();
 
-      renderReviews();
+      // Animate the new card onto the stack
+      addReviewCard(newReview);
 
       // Reset form
       document.getElementById('reviewName').value = '';
@@ -871,8 +910,6 @@
       pickStar(0);
 
       showToast('Thank you for your review! 🎉');
-
-      setTimeout(initReveal, 100);
     }
 
     function handleContactSubmit(e) {

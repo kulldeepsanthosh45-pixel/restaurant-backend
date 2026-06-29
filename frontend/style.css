@@ -1918,6 +1918,7 @@ body {
     gap: 12px;
   }
 
+
   .admin-layout {
     flex-direction: column;
   }
@@ -1927,4 +1928,90 @@ body {
     height: auto;
     position: static;
   }
+
+  /* 2-column contact on mobile */
+  .contact-info-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
 }
+
+/* ─── STACKED REVIEWS ─── */
+.reviews-stack-wrap {
+  max-width: 520px;
+  margin: 0 auto 40px;
+  padding: 0 16px;
+}
+
+.reviews-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.stack-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 18px;
+  padding: 22px 24px;
+  margin-bottom: -60px;
+  transition: transform 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s, scale 0.4s;
+  transform: translateY(calc(var(--depth, 0) * 12px)) scale(calc(1 - var(--depth, 0) * 0.04));
+  opacity: calc(1 - var(--depth, 0) * 0.18);
+  position: relative;
+  z-index: calc(10 - var(--depth, 0));
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+.stack-card:first-child {
+  margin-top: 0;
+}
+
+/* last visible card has extra bottom space */
+.reviews-stack {
+  padding-bottom: 80px;
+}
+
+/* enter animation: slide in from top */
+.stack-enter {
+  transform: translateY(-40px) scale(1) !important;
+  opacity: 0 !important;
+}
+
+/* exit animation: shrink and fade */
+.stack-exit {
+  transform: translateY(20px) scale(0.85) !important;
+  opacity: 0 !important;
+  transition: all 0.35s ease !important;
+}
+
+/* ─── CONTACT INFO GRID ─── */
+.contact-info-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+  justify-items: center;
+  text-align: center;
+  padding: 0 32px 48px;
+}
+
+.info-item.contact-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .contact-info-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-info-grid {
+    grid-template-columns: 1fr 1fr;
+    padding: 0 20px 40px;
+    gap: 28px;
+  }
+}
