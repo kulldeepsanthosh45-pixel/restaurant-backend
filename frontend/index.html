@@ -1231,13 +1231,48 @@
           status: 'Pending', time: new Date().toLocaleTimeString()
         };
 
-        if (paymentMethod === 'Online') {
-          // Build the payment handle URL with amount and order reference
-          const paymentHandleUrl = `https://razorpay.me/@thoppelakshmananeverdineresta?amount=${total}&description=Order%20%23${orderId}%20-%20Table%20${encodeURIComponent(table)}`;
-          showToast('🎉 Order #' + orderId + ' placed! Redirecting to payment...');
-          finishOrderUI(finalOrder);
-          // Open Razorpay Payment Handle in a new tab
-          setTimeout(() => window.open(paymentHandleUrl, '_blank'), 1000);
+        if (paymentMethod === 'Online' && data.razorpay_order) {
+          // Initialize Razorpay Checkout
+          const options = {
+            key: data.key_id,
+            amount: data.razorpay_order.amount,
+            currency: "INR",
+            name: "Everdine Restaurant",
+            description: "Order #" + orderId,
+            order_id: data.razorpay_order.id,
+            handler: async function (response) {
+              // Verify Payment
+              try {
+                const verifyRes = await fetch('https://restaurant-backend-production-ecec.up.railway.app/api/payment/verify', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    order_id: orderId,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature
+                  })
+                });
+                const verifyData = await verifyRes.json();
+                if (!verifyRes.ok) throw new Error(verifyData.message || 'Verification failed');
+
+                showToast('✅ Payment Successful!');
+                finishOrderUI(finalOrder);
+              } catch (err) {
+                showToast('❌ Payment verification failed: ' + err.message);
+              }
+            },
+            prefill: {
+              name: session ? (session.user.user_metadata?.name || "Guest") : "Guest",
+              contact: "9999999999"
+            },
+            theme: { color: "#e8a020" }
+          };
+          const rzp = new window.Razorpay(options);
+          rzp.on('payment.failed', function (response) {
+            showToast('❌ Payment Failed');
+          });
+          rzp.open();
         } else {
           // Cash payment - finish immediately
           showToast('🎉 Order #' + orderId + ' placed successfully!');
